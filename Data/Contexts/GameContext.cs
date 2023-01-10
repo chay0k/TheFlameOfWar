@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Data.Models;
+using System.Configuration;
 
 namespace Data.Contexts;
 
@@ -22,7 +23,9 @@ public class GameContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlite("Data Source=theflamesofwar.db");
+        string connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+        //optionsBuilder.UseSqlite("Data Source=theflamesofwar.db");
+        optionsBuilder.UseSqlite(connectionString);
     }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
