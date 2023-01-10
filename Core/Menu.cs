@@ -35,6 +35,7 @@ public class Menu: IMenuProcessing
         return new List<Map>();
     }
 
+    //so big function...
     private bool IsCurrentGameExist(InnerParametres innerParametres)
     {
         var playerSessionRepository = unitOfWork.PlayerSessionRepository;
