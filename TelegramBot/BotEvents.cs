@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Contracts.Models;
+using Contracts;
+using Core;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Telegram.Bot;
@@ -9,6 +12,8 @@ namespace TelegramBot;
 
 public static class BotEvents
 {
+    private static IMenu _menuCommands = new Menu();
+    public static IMenu Menu { set => _menuCommands = value; }
 
     public static ITelegramBotClient Bot { get; set; }
     public static async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)

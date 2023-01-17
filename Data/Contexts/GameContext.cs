@@ -23,6 +23,7 @@ public class GameContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
+                                
         string connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
         //optionsBuilder.UseSqlite("Data Source=theflamesofwar.db");
         optionsBuilder.UseSqlite(connectionString);

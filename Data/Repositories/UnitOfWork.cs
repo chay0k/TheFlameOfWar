@@ -1,13 +1,9 @@
 ﻿using Data.Contexts;
 using Data.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Data.Repositories;
-public class UnitOfWork : IDisposable
+public class UnitOfWork : IDisposable, IUnitOfWork
 {
     private GameContext context = new GameContext();
     private GenericRepository<Map> mapRepository;

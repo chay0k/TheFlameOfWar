@@ -17,42 +17,26 @@ namespace Data.Repositories
             this.dbSet = context.Set<TEntity>();
         }
 
-        public virtual async Task<IEnumerable<TEntity>> GetAsync(Expression<Func<TEntity, bool>> filter = null, 
-            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null, string includeProperties ="")
+        public virtual async Task<IQueryable<TEntity>> GetAsync()
         {
             IQueryable<TEntity> query = dbSet;
 
-            if (filter != null)
-            {
-
-                query = query.Where(filter);
-            }
-            foreach (var includeProperty in includeProperties.Split (new char[] { ','}, StringSplitOptions.RemoveEmptyEntries))
-            {
-                query = query.Include(includeProperty);
-            }
-            if(orderBy != null)
-            {
-                return await orderBy(query).ToListAsync();
-            }
-            {
-                return await query.ToListAsync();
-            }
+            return query.AsQueryable();
         }
         public virtual async Task<TEntity> GetByIdAsync(object id)
         {
             return await dbSet.FindAsync(id);
         }
-        public virtual async Task Insert(TEntity entity)
+        public virtual async Task InsertAsync(TEntity entity)
         {
             await dbSet.AddAsync(entity);
         }
-        public virtual async Task Delete(object id)
+        public virtual async Task DeleteAsync(object id)
         {
             var entityToDelete = await dbSet.FindAsync(id);
             dbSet.Remove(entityToDelete);
         }
-        public virtual Task Delete(TEntity entityToDelete)
+        public virtual Task DeleteAsync(TEntity entityToDelete)
         {
             if (context.Entry(entityToDelete).State == EntityState.Detached)
             {
@@ -71,10 +55,10 @@ namespace Data.Repositories
         {
             var allEntities = await dbSet.ToListAsync();
             foreach (var entity in allEntities)
-                Delete(entity);
+                DeleteAsync(entity);
         }
 
-        public async Task Save()
+        public async Task SaveAsync()
         {
             context.SaveChangesAsync();
         }
