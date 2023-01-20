@@ -5,152 +5,36 @@ using Data.Models;
 namespace Data.Repositories;
 public class UnitOfWork : IDisposable, IUnitOfWork
 {
-    private GameContext context = new GameContext();
-    private GenericRepository<Map> mapRepository;
-    private GenericRepository<Cell> cellRepository;
-    private GenericRepository<GameLog> gameLogRepository;
-    private GenericRepository<Land> landRepository;
-    private GenericRepository<Lobby> lobbyRepository;
-    private GenericRepository<LobbyCell> lobbyCellRepository;
-    private GenericRepository<PlayerCondition> playerConditionRepository;
-    private GenericRepository<Resource> resourceRepository;
-    private GenericRepository<Thing> thingRepository;
-    private GenericRepository<Unit> unitRepository;
-    private GenericRepository<Player> playerRepository;
-    private GenericRepository<PlayerSession> playerSessionRepository;
+    private GameDbContext context = new GameDbContext();
+    private GenericRepository<Map> _mapRepository;
+    private GenericRepository<Cell> _cellRepository;
+    private GenericRepository<GameLog> _gameLogRepository;
+    private GenericRepository<Land> _landRepository;
+    private GenericRepository<Lobby> _lobbyRepository;
+    private GenericRepository<LobbyCell> _lobbyCellRepository;
+    private GenericRepository<PlayerCondition> _playerConditionRepository;
+    private GenericRepository<Resource> _resourceRepository;
+    private GenericRepository<Thing> _thingRepository;
+    private GenericRepository<Unit> _unitRepository;
+    private GenericRepository<Player> _playerRepository;
+    private GenericRepository<PlayerSession> _playerSessionRepository;
+    private GenericRepository<Command> _commandRepository;
+    private GenericRepository<LastCommand> _lastCommandRepository;
 
-    public GenericRepository<Map> MapRepository
-    {
-        get
-        {
-            if (this.mapRepository == null)
-            {
-                this.mapRepository = new GenericRepository<Map>(context);
-            }
-            return mapRepository;
-        }
-    }
-    public GenericRepository<Cell> CellRepository
-    {
-        get
-        {
-            if (this.cellRepository == null)
-            {
-                this.cellRepository = new GenericRepository<Cell>(context);
-            }
-            return cellRepository;
-        }
-    }
-    public GenericRepository<GameLog> GameLogRepository
-    {
-        get
-        {
-            if (this.gameLogRepository == null)
-            {
-                this.gameLogRepository = new GenericRepository<GameLog>(context);
-            }
-            return gameLogRepository;
-        }
-    }
-    public GenericRepository<Land> LandRepository
-    {
-        get
-        {
-            if (this.landRepository == null)
-            {
-                this.landRepository = new GenericRepository<Land>(context);
-            }
-            return landRepository;
-        }
-    }
-    public GenericRepository<Lobby> LobbyRepository
-    {
-        get
-        {
-            if (this.lobbyRepository == null)
-            {
-                this.lobbyRepository = new GenericRepository<Lobby>(context);
-            }
-            return lobbyRepository;
-        }
-    }
-    public GenericRepository<LobbyCell> LobbyCellRepository
-    {
-        get
-        {
-            if (this.lobbyCellRepository == null)
-            {
-                this.lobbyCellRepository = new GenericRepository<LobbyCell>(context);
-            }
-            return lobbyCellRepository;
-        }
-    }
-    public GenericRepository<PlayerCondition> PlayerConditionRepository
-    {
-        get
-        {
-            if (this.playerConditionRepository == null)
-            {
-                this.playerConditionRepository = new GenericRepository<PlayerCondition>(context);
-            }
-            return playerConditionRepository;
-        }
-    }
-    public GenericRepository<Resource> ResourceRepository
-    {
-        get
-        {
-            if (this.resourceRepository == null)
-            {
-                this.resourceRepository = new GenericRepository<Resource>(context);
-            }
-            return resourceRepository;
-        }
-    }
-    public GenericRepository<Thing> ThingRepository
-    {
-        get
-        {
-            if (this.thingRepository == null)
-            {
-                this.thingRepository = new GenericRepository<Thing>(context);
-            }
-            return thingRepository;
-        }
-    }
-    public GenericRepository<Unit> UnitRepository
-    {
-        get
-        {
-            if (this.unitRepository == null)
-            {
-                this.unitRepository = new GenericRepository<Unit>(context);
-            }
-            return unitRepository;
-        }
-    }
-    public GenericRepository<Player> PlayerRepository
-    {
-        get
-        {
-            if (this.playerRepository == null)
-            {
-                this.playerRepository = new GenericRepository<Player>(context);
-            }
-            return playerRepository;
-        }
-    }
-    public GenericRepository<PlayerSession> PlayerSessionRepository
-    {
-        get
-        {
-            if (this.playerSessionRepository == null)
-            {
-                this.playerSessionRepository = new GenericRepository<PlayerSession>(context);
-            }
-            return playerSessionRepository;
-        }
-    }
+    public GenericRepository<Map> MapRepository => _mapRepository ??= new GenericRepository<Map>(context);
+    public GenericRepository<Cell> CellRepository =>_cellRepository ??= new GenericRepository<Cell>(context);
+    public GenericRepository<GameLog> GameLogRepository => _gameLogRepository ??= new GenericRepository<GameLog>(context);
+    public GenericRepository<Land> LandRepository => _landRepository ??= new GenericRepository<Land>(context);
+    public GenericRepository<Lobby> LobbyRepository => _lobbyRepository ??= new GenericRepository<Lobby>(context);
+    public GenericRepository<LobbyCell> LobbyCellRepository => _lobbyCellRepository ??= new GenericRepository<LobbyCell>(context);
+    public GenericRepository<PlayerCondition> PlayerConditionRepository => _playerConditionRepository ??= new GenericRepository<PlayerCondition>(context);
+    public GenericRepository<Resource> ResourceRepository => _resourceRepository ??= new GenericRepository<Resource>(context);
+    public GenericRepository<Thing> ThingRepository => _thingRepository ??= new GenericRepository<Thing>(context);
+    public GenericRepository<Unit> UnitRepository => _unitRepository ??= new GenericRepository<Unit>(context);
+    public GenericRepository<Player> PlayerRepository => _playerRepository ??= new GenericRepository<Player>(context);
+    public GenericRepository<PlayerSession> PlayerSessionRepository => _playerSessionRepository = new GenericRepository<PlayerSession>(context);
+    public GenericRepository<Command> CommandRepository => _commandRepository ??= new GenericRepository<Command>(context);
+    public GenericRepository<LastCommand> LastCommandRepository => _lastCommandRepository ??= new GenericRepository<LastCommand>(context);
 
     public void Save()
     {

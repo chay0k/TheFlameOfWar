@@ -8,10 +8,10 @@ namespace Data.Repositories
         where TEntity : class
 
     {
-        internal GameContext context;
+        internal GameDbContext context;
         internal DbSet<TEntity> dbSet;
 
-        public GenericRepository(GameContext context)
+        public GenericRepository(GameDbContext context)
         {
             this.context = context;
             this.dbSet = context.Set<TEntity>();

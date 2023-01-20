@@ -16,5 +16,7 @@ public interface IUnitOfWork
     public GenericRepository<Unit> UnitRepository { get; }
     public GenericRepository<Player> PlayerRepository { get; }
     public GenericRepository<PlayerSession> PlayerSessionRepository { get; }
+    public GenericRepository<LastCommand> LastCommandRepository { get; }
+    public GenericRepository<Command> CommandRepository { get; }
 
 }

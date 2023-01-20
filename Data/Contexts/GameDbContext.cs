@@ -4,7 +4,7 @@ using System.Configuration;
 
 namespace Data.Contexts;
 
-public class GameContext : DbContext
+public class GameDbContext : DbContext
 {
     public DbSet<PlayerCondition> PlayerConditions { get; set; }
     public DbSet<Land> Lands { get; set; }
@@ -18,8 +18,8 @@ public class GameContext : DbContext
     public DbSet<PlayerSession> UserSessions { get; set; }
     public DbSet<GameLog> GameLog { get; set; }
 
-    //public GameContext() => Database.EnsureDeleted();
-    public GameContext() => Database.EnsureCreated();
+    //public GameDbContext() => Database.EnsureDeleted();
+    public GameDbContext() => Database.EnsureCreated();
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
