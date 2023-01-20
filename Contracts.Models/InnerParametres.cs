@@ -7,5 +7,7 @@ using System.Threading.Tasks;
 namespace Contracts.Models;
 public class InnerParametres
 {
+    public long ChatId { get; set; }
     public User User { get; set; }
+    public string Text { get; set; }
 }

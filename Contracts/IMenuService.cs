@@ -1,9 +1,9 @@
 ﻿using Contracts.Models;
 
 namespace Contracts;
-public interface IMenuProcessing
+public interface IMenuService
 {
-    public List<MenuCommands> GetAvailableCommands(InnerParametres innerParametres);
+    public Task<List<MenuCommands>> GetAvailableCommandsAsync(InnerParametres innerParametres);
     public Answer ProcessCommand(InnerParametres innerParametres, MenuCommands command);
     public List<Map> GetMapList(InnerParametres innerParametres);
 }

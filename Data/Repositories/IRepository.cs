@@ -3,12 +3,11 @@ namespace Data.Repositories;
 public interface IRepository<TEntity> : IDisposable
         where TEntity : class
 {
-    Task<IEnumerable<TEntity>> GetAsync(Expression<Func<TEntity, bool>> filter = null,
-        Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null, string includeProperties = ""); // получение всех объектов
-    Task<TEntity> GetByIdAsync(object id); // получение одного объекта по id
-    Task Insert(TEntity entity); // создание объекта
+    Task<IQueryable<TEntity>> GetAsync(); 
+    Task<TEntity> GetByIdAsync(object id); 
+    Task InsertAsync(TEntity entity); 
     void Update(TEntity entityToUpdate); // обновление объекта
-    Task Delete(object id); // удаление объекта по id
-    Task Delete(TEntity entity); // удаление объекта по id
-    Task Save();  // сохранение изменений
+    Task DeleteAsync(object id); // удаление объекта по id
+    Task DeleteAsync(TEntity entity); // удаление объекта по id
+    Task SaveAsync();  // сохранение изменений
 }

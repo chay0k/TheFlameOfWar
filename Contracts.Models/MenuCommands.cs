@@ -8,5 +8,8 @@ public enum MenuCommands
     CreateMap,
     Info,
     StepBack,
-    MainMenu
+    MainMenu,
+    CreateNewUser,
+    ChooseOtherUser,
+    Name
 }
