@@ -1,7 +1,7 @@
 ﻿using Contracts.Models;
 
 namespace Data.Models;
-public class PlayerSession
+public class PlayerSessionEntity
 {
     public Guid Id { get; set; }
     public Guid PlayerId { get; set; }

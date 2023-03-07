@@ -1,5 +1,5 @@
 ﻿namespace Data.Models;
-public class Resource
+public class ResourceEntity
 {
     public Guid Id { get; set; }
     public string Name { get; set; } = "";

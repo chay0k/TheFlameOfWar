@@ -1,6 +1,6 @@
 ﻿using Contracts.Models;
 namespace Data.Models;
-public class Unit
+public class UnitEntity
 {
     public Guid Id { get; set; }
     public int Speed { get; set; }

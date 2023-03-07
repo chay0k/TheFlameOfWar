@@ -1,5 +1,5 @@
 ﻿namespace Data.Models;
-public class GameLog
+public class GameLogEntity
 {
     public Guid Id { get; set; }
     public Guid PlayerId { get; set; }

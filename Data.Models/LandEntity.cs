@@ -1,7 +1,7 @@
 ﻿using Contracts.Models;
 
 namespace Data.Models;
-public class Land
+public class LandEntity
     {
         public Guid Id { get; set; }
         public int CardNumber { get; set; } = 0;

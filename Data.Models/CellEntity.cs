@@ -1,5 +1,5 @@
 ﻿namespace Data.Models;
-public class Cell
+public class CellEntity
 {
     public Guid Id { get; set; }
     public int CoordinateX { get; set; }

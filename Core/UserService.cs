@@ -34,7 +34,7 @@ public class UserService: IUserService
         await _unitOfWork.PlayerRepository.InsertAsync(player);
     }
 
-    private User TranformToUser(Player player)
+    private User TranformToUser(PlayerEntity player)
     {
         if (player == null) return new User();
         return new User() 
@@ -47,10 +47,10 @@ public class UserService: IUserService
         };
     }
 
-    private Player TransformToPlayer (User user)
+    private PlayerEntity TransformToPlayer (User user)
     {
-        if(user == null) return new Player();
-        return new Player()
+        if(user == null) return new PlayerEntity();
+        return new PlayerEntity()
         {
             Id = user.Id,
             Name = user.Name,

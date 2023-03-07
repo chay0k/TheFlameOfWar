@@ -6,17 +6,17 @@ namespace Data.Contexts;
 
 public class GameDbContext : DbContext
 {
-    public DbSet<PlayerCondition> PlayerConditions { get; set; }
-    public DbSet<Land> Lands { get; set; }
-    public DbSet<Resource> Resources { get; set; }
-    public DbSet<Thing> Things { get; set; }
-    public DbSet<Map> Maps { get; set; }
-    public DbSet<Cell> Cells { get; set; }
-    public DbSet<LobbyCell> TableCells { get; set; }
-    public DbSet<Lobby> Tables { get; set; }
-    public DbSet<Player> Users { get; set; }
-    public DbSet<PlayerSession> UserSessions { get; set; }
-    public DbSet<GameLog> GameLog { get; set; }
+    public DbSet<PlayerConditionEntity> PlayerConditions { get; set; }
+    public DbSet<LandEntity> Lands { get; set; }
+    public DbSet<ResourceEntity> Resources { get; set; }
+    public DbSet<ThingEntity> Things { get; set; }
+    public DbSet<MapEntity> Maps { get; set; }
+    public DbSet<CellEntity> Cells { get; set; }
+    public DbSet<LobbyCellEntity> TableCells { get; set; }
+    public DbSet<LobbyEntity> Tables { get; set; }
+    public DbSet<PlayerEntity> Users { get; set; }
+    public DbSet<PlayerSessionEntity> UserSessions { get; set; }
+    public DbSet<GameLogEntity> GameLog { get; set; }
 
     //public GameDbContext() => Database.EnsureDeleted();
     public GameDbContext() => Database.EnsureCreated();
@@ -30,5 +30,9 @@ public class GameDbContext : DbContext
     }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        //modelBuilder.Entity<PlayerEntity>(entity =>
+        //{
+        //    entity.HasOne
+        //});
     }
 }

@@ -6,35 +6,35 @@ namespace Data.Repositories;
 public class UnitOfWork : IDisposable, IUnitOfWork
 {
     private GameDbContext context = new GameDbContext();
-    private GenericRepository<Map> _mapRepository;
-    private GenericRepository<Cell> _cellRepository;
-    private GenericRepository<GameLog> _gameLogRepository;
-    private GenericRepository<Land> _landRepository;
-    private GenericRepository<Lobby> _lobbyRepository;
-    private GenericRepository<LobbyCell> _lobbyCellRepository;
-    private GenericRepository<PlayerCondition> _playerConditionRepository;
-    private GenericRepository<Resource> _resourceRepository;
-    private GenericRepository<Thing> _thingRepository;
-    private GenericRepository<Unit> _unitRepository;
-    private GenericRepository<Player> _playerRepository;
-    private GenericRepository<PlayerSession> _playerSessionRepository;
-    private GenericRepository<Command> _commandRepository;
-    private GenericRepository<LastCommand> _lastCommandRepository;
+    private GenericRepository<MapEntity> _mapRepository;
+    private GenericRepository<CellEntity> _cellRepository;
+    private GenericRepository<GameLogEntity> _gameLogRepository;
+    private GenericRepository<LandEntity> _landRepository;
+    private GenericRepository<LobbyEntity> _lobbyRepository;
+    private GenericRepository<LobbyCellEntity> _lobbyCellRepository;
+    private GenericRepository<PlayerConditionEntity> _playerConditionRepository;
+    private GenericRepository<ResourceEntity> _resourceRepository;
+    private GenericRepository<ThingEntity> _thingRepository;
+    private GenericRepository<UnitEntity> _unitRepository;
+    private GenericRepository<PlayerEntity> _playerRepository;
+    private GenericRepository<PlayerSessionEntity> _playerSessionRepository;
+    private GenericRepository<CommandEntity> _commandRepository;
+    private GenericRepository<LastCommandEntity> _lastCommandRepository;
 
-    public GenericRepository<Map> MapRepository => _mapRepository ??= new GenericRepository<Map>(context);
-    public GenericRepository<Cell> CellRepository =>_cellRepository ??= new GenericRepository<Cell>(context);
-    public GenericRepository<GameLog> GameLogRepository => _gameLogRepository ??= new GenericRepository<GameLog>(context);
-    public GenericRepository<Land> LandRepository => _landRepository ??= new GenericRepository<Land>(context);
-    public GenericRepository<Lobby> LobbyRepository => _lobbyRepository ??= new GenericRepository<Lobby>(context);
-    public GenericRepository<LobbyCell> LobbyCellRepository => _lobbyCellRepository ??= new GenericRepository<LobbyCell>(context);
-    public GenericRepository<PlayerCondition> PlayerConditionRepository => _playerConditionRepository ??= new GenericRepository<PlayerCondition>(context);
-    public GenericRepository<Resource> ResourceRepository => _resourceRepository ??= new GenericRepository<Resource>(context);
-    public GenericRepository<Thing> ThingRepository => _thingRepository ??= new GenericRepository<Thing>(context);
-    public GenericRepository<Unit> UnitRepository => _unitRepository ??= new GenericRepository<Unit>(context);
-    public GenericRepository<Player> PlayerRepository => _playerRepository ??= new GenericRepository<Player>(context);
-    public GenericRepository<PlayerSession> PlayerSessionRepository => _playerSessionRepository = new GenericRepository<PlayerSession>(context);
-    public GenericRepository<Command> CommandRepository => _commandRepository ??= new GenericRepository<Command>(context);
-    public GenericRepository<LastCommand> LastCommandRepository => _lastCommandRepository ??= new GenericRepository<LastCommand>(context);
+    public GenericRepository<MapEntity> MapRepository => _mapRepository ??= new GenericRepository<MapEntity>(context);
+    public GenericRepository<CellEntity> CellRepository =>_cellRepository ??= new GenericRepository<CellEntity>(context);
+    public GenericRepository<GameLogEntity> GameLogRepository => _gameLogRepository ??= new GenericRepository<GameLogEntity>(context);
+    public GenericRepository<LandEntity> LandRepository => _landRepository ??= new GenericRepository<LandEntity>(context);
+    public GenericRepository<LobbyEntity> LobbyRepository => _lobbyRepository ??= new GenericRepository<LobbyEntity>(context);
+    public GenericRepository<LobbyCellEntity> LobbyCellRepository => _lobbyCellRepository ??= new GenericRepository<LobbyCellEntity>(context);
+    public GenericRepository<PlayerConditionEntity> PlayerConditionRepository => _playerConditionRepository ??= new GenericRepository<PlayerConditionEntity>(context);
+    public GenericRepository<ResourceEntity> ResourceRepository => _resourceRepository ??= new GenericRepository<ResourceEntity>(context);
+    public GenericRepository<ThingEntity> ThingRepository => _thingRepository ??= new GenericRepository<ThingEntity>(context);
+    public GenericRepository<UnitEntity> UnitRepository => _unitRepository ??= new GenericRepository<UnitEntity>(context);
+    public GenericRepository<PlayerEntity> PlayerRepository => _playerRepository ??= new GenericRepository<PlayerEntity>(context);
+    public GenericRepository<PlayerSessionEntity> PlayerSessionRepository => _playerSessionRepository = new GenericRepository<PlayerSessionEntity>(context);
+    public GenericRepository<CommandEntity> CommandRepository => _commandRepository ??= new GenericRepository<CommandEntity>(context);
+    public GenericRepository<LastCommandEntity> LastCommandRepository => _lastCommandRepository ??= new GenericRepository<LastCommandEntity>(context);
 
     public void Save()
     {

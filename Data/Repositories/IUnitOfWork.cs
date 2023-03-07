@@ -4,19 +4,19 @@ using Data.Models;
 namespace Data.Repositories;
 public interface IUnitOfWork
 {
-    public GenericRepository<Map> MapRepository { get; }
-    public GenericRepository<Cell> CellRepository { get; }
-    public GenericRepository<GameLog> GameLogRepository { get; }
-    public GenericRepository<Land> LandRepository { get; }
-    public GenericRepository<Lobby> LobbyRepository { get; }
-    public GenericRepository<LobbyCell> LobbyCellRepository { get;}
-    public GenericRepository<PlayerCondition> PlayerConditionRepository { get;}
-    public GenericRepository<Resource> ResourceRepository { get; }
-    public GenericRepository<Thing> ThingRepository { get; }
-    public GenericRepository<Unit> UnitRepository { get; }
-    public GenericRepository<Player> PlayerRepository { get; }
-    public GenericRepository<PlayerSession> PlayerSessionRepository { get; }
-    public GenericRepository<LastCommand> LastCommandRepository { get; }
-    public GenericRepository<Command> CommandRepository { get; }
+    public GenericRepository<MapEntity> MapRepository { get; }
+    public GenericRepository<CellEntity> CellRepository { get; }
+    public GenericRepository<GameLogEntity> GameLogRepository { get; }
+    public GenericRepository<LandEntity> LandRepository { get; }
+    public GenericRepository<LobbyEntity> LobbyRepository { get; }
+    public GenericRepository<LobbyCellEntity> LobbyCellRepository { get;}
+    public GenericRepository<PlayerConditionEntity> PlayerConditionRepository { get;}
+    public GenericRepository<ResourceEntity> ResourceRepository { get; }
+    public GenericRepository<ThingEntity> ThingRepository { get; }
+    public GenericRepository<UnitEntity> UnitRepository { get; }
+    public GenericRepository<PlayerEntity> PlayerRepository { get; }
+    public GenericRepository<PlayerSessionEntity> PlayerSessionRepository { get; }
+    public GenericRepository<LastCommandEntity> LastCommandRepository { get; }
+    public GenericRepository<CommandEntity> CommandRepository { get; }
 
 }

@@ -59,7 +59,7 @@ public static class BotEvents
 
     private static async Task TemporaryAuthentificationAsync(Message message, string text)
     {
-        var command = CommandServise.FindCommand(text);
+        var command = await CommandServise.FindCommandAsync(text);
         if(command == null)
         {
             await Bot.SendTextMessageAsync(message.Chat.Id, $"I don't understand, please try again");

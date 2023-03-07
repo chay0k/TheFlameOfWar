@@ -2,7 +2,7 @@
 
 
 namespace Data.Models;
-public class Command
+public class CommandEntity
 {
     public Guid Id { get; set; }
     public string Name { get; set; }

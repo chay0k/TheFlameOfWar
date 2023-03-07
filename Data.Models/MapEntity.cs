@@ -1,5 +1,5 @@
 ﻿namespace Data.Models;
-public class Map
+public class MapEntity
 {
     public Guid Id { get; set; }
     public string Name { get; set; } = "";

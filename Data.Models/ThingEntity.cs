@@ -1,6 +1,6 @@
 ﻿using Contracts.Models;
 namespace Data.Models;
-public class Thing
+public class ThingEntity
 {
     public Guid Id { get; set; }
     public Guid ThingId { get; set; }

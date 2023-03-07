@@ -5,8 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Data.Models;
-public class LastCommand
+public class LastCommandEntity
 {
     public long Id { get; set; }
-    public Command Command { get; set; }
+    public Guid CommandId { get; set; }
+    public CommandEntity Command { get; set; }
 }

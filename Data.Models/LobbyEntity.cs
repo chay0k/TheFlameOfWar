@@ -1,5 +1,5 @@
 ﻿namespace Data.Models;
-public class Lobby
+public class LobbyEntity
 {
 
     public Guid Id { get; set; }

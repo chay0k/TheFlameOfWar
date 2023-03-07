@@ -1,5 +1,5 @@
 ﻿namespace Data.Models;
-public class PlayerCondition
+public class PlayerConditionEntity
 {
     public Guid Id { get; set; }
     public Guid UserId { get; set; }

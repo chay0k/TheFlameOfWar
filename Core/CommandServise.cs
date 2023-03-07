@@ -6,7 +6,7 @@ public static class CommandServise
 {
     private static IUnitOfWork _unitOfWork = new UnitOfWork();
     public static IUnitOfWork UnitOfWork { set { _unitOfWork = value; } }
-    public static Command FindCommand(string text)
+    public static async Task<CommandEntity> FindCommandAsync(string text)
     {
         string name = "";
         if (text.IndexOf(" ") != -1)
@@ -18,23 +18,23 @@ public static class CommandServise
             name=text;
         }
 
-        var command = _unitOfWork.CommandRepository.GetAsync().Result.
-            Where(x => x.Name == name).FirstOrDefault();
+        var commandQuery = await _unitOfWork.CommandRepository.GetAsync();
+        var command = commandQuery.Where(x => x.Name == name).FirstOrDefault();
         return command;
     }
-    public static bool IsAbleToPerform(Command command, long chatId)
+    public static bool IsAbleToPerform(CommandEntity command, long chatId)
     {
         return true;
     }
 
-    public static async Task<Command> GetLastCommandAsync(long id)
+    public static async Task<CommandEntity> GetLastCommandAsync(long id)
     {
         if (id == 0)
             return null;
         var lastCommandRecord =  await _unitOfWork.LastCommandRepository.GetByIdAsync(id);
         return lastCommandRecord.Command;
     }
-    public static async Task UpdateCommandAsync(long chatId, Command command)
+    public static async Task UpdateCommandAsync(long chatId, CommandEntity command)
     {
         var lastCommandRecord = await _unitOfWork.LastCommandRepository.GetByIdAsync(chatId);
         lastCommandRecord.Command = command;

@@ -81,7 +81,7 @@ public class MenuService: IMenuService
 
     private Answer ProcessCreateNewUser(InnerParametres innerParametres)
     {
-        var command = new Command() { CommandType = CommandTypes.MenuCommand, MenuCommand = MenuCommands.CreateNewUser };
+        var command = new CommandEntity() { CommandType = CommandTypes.MenuCommand, MenuCommand = MenuCommands.CreateNewUser };
         Answer answer = new Answer();
         if (CommandServise.IsAbleToPerform(command, innerParametres.ChatId))
         {
@@ -112,7 +112,7 @@ public class MenuService: IMenuService
             OrderBy(s => s.DateTime).ToList();
 
         var lobbiesRepository = _unitOfWork.LobbyRepository;
-        var lobbyList = new List<Data.Models.Lobby>();
+        var lobbyList = new List<Data.Models.LobbyEntity>();
         foreach (var playerSession in lastPlayerSessions)
         {
             var currentLobby = lobbiesRepository.GetByIdAsync(playerSession.LobbyId).Result;
