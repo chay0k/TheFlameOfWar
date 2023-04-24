@@ -6,5 +6,6 @@ public class PlayerEntity
     public long TelegramId { get; set; }
     public string FirstName { get; set; }
     public string LastName { get; set; }
+    public virtual ICollection<PlayerConditionEntity> PlayerConditions { get; set; }
 }
 

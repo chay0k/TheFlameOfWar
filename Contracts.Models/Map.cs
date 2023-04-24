@@ -1,4 +1,6 @@
-﻿namespace Contracts.Models;
+﻿using System.Xml.Linq;
+
+namespace Contracts.Models;
 public class Map
 {
     public Guid Id { get; set; }

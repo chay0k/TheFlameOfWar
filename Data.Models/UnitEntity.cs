@@ -10,5 +10,6 @@ public class UnitEntity
     public int Weight { get; set; }
     public UnitTypes UnitType { get; set; }
     public int ExstraEnergy { get; set; }
-
+    public PanteonEntity Panteon { get; set; }
+    public List<GuardUnitListEntity> GuardUnitLists { get; set; } // Властивість навігації до GuardUnitListEntity
 }

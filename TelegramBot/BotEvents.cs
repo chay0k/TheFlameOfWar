@@ -1,90 +1,99 @@
 ﻿using Contracts.Models;
 using Contracts;
 using Core;
-using System;
+using Core.Servisces;
+using Data.Repositories;
 using System.Threading;
 using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using static SQLite.SQLite3;
 
 
 namespace TelegramBot;
 
-public static class BotEvents
+public class BotEvents
 {
-    private static IMenuService _menuService = new MenuService();
-    public static IMenuService Menu { set => _menuService = value; }
-    public static ITelegramBotClient Bot { get; set; }
+    private readonly ICommandService _commandService;
+    private readonly IPlayerService _playerService;
+    private readonly ILobbyService _lobbyService;
+    private readonly Dictionary<long, ISessionService> _sessionServices;
+    private readonly IBotResultPresenter _resultPresenter;
 
-    public static IUserService _userService = new UserService();
-    public static IUserService UserService { set => _userService = value; }
-    public static async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
+    public BotEvents(ICommandService commandService, IPlayerService playerService, IBotResultPresenter resultPresenter, ILobbyService lobbyService)
     {
-        Message message = null;
+        _commandService = commandService;
+        _playerService = playerService;
+        _sessionServices = new Dictionary<long, ISessionService>();
+        _resultPresenter = resultPresenter;
+        _lobbyService = lobbyService;
+    }
+
+    public async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
+    {
+        Message? message = null;
         string text = "";
-        if (update == null)
+
+        if (!IsGetMessageAndText(ref message, ref text, update))
+        {
             return;
-        if (update.Type == Telegram.Bot.Types.Enums.UpdateType.Message)
-        {
-            if (update.Message == null)
-                return;
-            message = update.Message;
-            text = message.Text.ToLower();
         }
-        else if(update.Type == Telegram.Bot.Types.Enums.UpdateType.CallbackQuery)
+            
+        long chatId = message.Chat.Id;
+        if (!_sessionServices.TryGetValue(chatId, out ISessionService sessionService))
         {
-            if (update.CallbackQuery == null || update.CallbackQuery.Message == null)
-                return;
-            message = update.CallbackQuery.Message;
-            text = update.CallbackQuery.Data.ToLower();
+            // create new session service for this user if not exist
+            sessionService = new SessionService(_playerService, _lobbyService);
+            _sessionServices[chatId] = sessionService;
         }
-        if (message == null)
-            return;
-        var currentUser = _userService.GetUser(message.Chat.Id);
-        var userName = "my friend";
-        if (currentUser != null)
-            userName = currentUser.Name;
-        await Bot.SendTextMessageAsync(message.Chat.Id, $"hello, {userName}!");
-        if (currentUser == null)
+        sessionService.UserTelegramId = chatId;
+        sessionService.SessionPlayer = await _playerService.GetPlayerAsync(chatId);
+
+        ICommand? command = null;
+        if (text.StartsWith('/'))
+            command = _commandService.FindCommand(ref text);
+        else if (sessionService.PeekCommand() != null)
+            command = sessionService.PeekCommand();
+
+        sessionService.LastInput = text;
+
+        if (command == null)
+            _resultPresenter.PresentResult("Unknown command", chatId);
+        else
         {
-            TemporaryAuthentificationAsync(message, text);
+            var result = await command.ExecuteAsync(sessionService);
+            _resultPresenter.PresentResult(result, chatId);
         }
     }
 
     public static async Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
     {
-        // Некоторые действия
         Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(exception));
     }
-
-    private static async Task TemporaryAuthentificationAsync(Message message, string text)
+    private bool IsGetMessageAndText(ref Message message, ref string text, Update update)
     {
-        var command = await CommandServise.FindCommandAsync(text);
-        if(command == null)
+        if (update == null)
+            return false;
+        if (update.Type == Telegram.Bot.Types.Enums.UpdateType.Message)
         {
-            await Bot.SendTextMessageAsync(message.Chat.Id, $"I don't understand, please try again");
-            return;
-        }
-        if(!CommandServise.IsAbleToPerform(command, message.Chat.Id))
-        {
-            await Bot.SendTextMessageAsync(message.Chat.Id, $"You can't do it right now. \nPlease, try another command");
-            return;
-        }
+            if (update.Message == null)
+                return false;
+            message = update.Message;
+            if (message == null) return false;
 
-        var innerParametres = new InnerParametres()
-            { User = null, ChatId = message.Chat.Id, Text = text };
-        var answer = _menuService.ProcessCommand(innerParametres, command.MenuCommand);
-        if (answer != null && answer.IsCompleted)
-        {
-
+            text = message.Text.ToLower();
         }
+        else if (update.Type == Telegram.Bot.Types.Enums.UpdateType.CallbackQuery)
+        {
+            if (update.CallbackQuery == null || update.CallbackQuery.Message == null)
+                return false;
+            message = update.CallbackQuery.Message;
+            text = update.CallbackQuery.Data.ToLower();
+        }
+        if (message == null)
+            return false;
+        return true;
     }
 
-    private static InnerParametres FillParametres(Contracts.Models.User user, long chatId, string text)
-    {
-        InnerParametres innerParametres = new InnerParametres()
-        { User = user, ChatId = chatId, Text = text };
-        return innerParametres;
-    }
 }
 

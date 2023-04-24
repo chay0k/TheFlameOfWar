@@ -6,8 +6,8 @@ public interface IRepository<TEntity> : IDisposable
     Task<IQueryable<TEntity>> GetAsync(); 
     Task<TEntity> GetByIdAsync(object id); 
     Task InsertAsync(TEntity entity); 
-    void Update(TEntity entityToUpdate); // обновление объекта
-    Task DeleteAsync(object id); // удаление объекта по id
-    Task DeleteAsync(TEntity entity); // удаление объекта по id
-    Task SaveAsync();  // сохранение изменений
+    void Update(TEntity entityToUpdate); 
+    Task DeleteAsync(object id); 
+    Task DeleteAsync(TEntity entity); 
+    Task SaveAsync();  
 }

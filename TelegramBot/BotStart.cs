@@ -4,6 +4,10 @@ using System.Threading;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
 using System.Configuration;
+using Core.Servisces;
+using Data.Repositories;
+using Microsoft.Extensions.Logging;
+using Core;
 
 namespace TelegramBot;
 public static class BotStart
@@ -16,7 +20,12 @@ public static class BotStart
     }
     public static void Start()
     {
-        Console.WriteLine(bot.GetMeAsync().Result.FirstName + " was started");
+        var unitOfWork = new UnitOfWork();
+        var playerRepository = new PlayerRepository(unitOfWork);
+        var playerService = new PlayerService(playerRepository);
+        var commandService = new CommandService();
+        var lobbyService = new LobbyService();
+        var botResultPresenter = new BotResultPresenter(bot);
 
         var cts = new CancellationTokenSource();
         var cancellationToken = cts.Token;
@@ -24,13 +33,14 @@ public static class BotStart
         {
             AllowedUpdates = { }, // receive all update types
         };
-        BotEvents.Bot = bot;
+        var botEvents = new BotEvents(commandService, playerService, botResultPresenter, lobbyService);
         bot.StartReceiving(
-            BotEvents.HandleUpdateAsync,
+            botEvents.HandleUpdateAsync,
             BotEvents.HandleErrorAsync,
             receiverOptions,
             cancellationToken
         );
+        Console.WriteLine(bot.GetMeAsync().Result.FirstName + " was started");
         Console.ReadLine();
     }
 }
