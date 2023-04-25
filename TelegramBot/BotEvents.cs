@@ -1,107 +1,112 @@
-﻿using System;
+﻿using Contracts.Models;
+using Contracts;
+using Core;
+using Core.Servisces;
+using Data.Repositories;
 using System.Threading;
 using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using static SQLite.SQLite3;
 
 
 namespace TelegramBot;
 
-public static class BotEvents
+public class BotEvents
 {
+    private readonly ICommandService _commandService;
+    private readonly IPlayerService _playerService;
+    private readonly ILobbyService _lobbyService;
+    private readonly Dictionary<long, ISessionService> _sessionServices;
+    private readonly IBotResultPresenter _resultPresenter;
 
-    public static ITelegramBotClient Bot { get; set; }
-    public static async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
+    public BotEvents(ICommandService commandService, IPlayerService playerService, IBotResultPresenter resultPresenter, ILobbyService lobbyService)
     {
-        if (update.Type == Telegram.Bot.Types.Enums.UpdateType.Message)
+        _commandService = commandService;
+        _playerService = playerService;
+        _sessionServices = new Dictionary<long, ISessionService>();
+        _resultPresenter = resultPresenter;
+        _lobbyService = lobbyService;
+    }
+
+    public async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
+    {
+        _commandService.ExpectedInput = false;
+        Message? message = null;
+        string text = "";
+
+        if (!IsGetMessageAndText(ref message, ref text, update))
         {
-            await Bot.SendTextMessageAsync(update.Message.Chat.Id, "hello");
+            return;
         }
-        //var displayStatus = false;
-        //var currentParameters = new LobbyParametrs();
-        //var currentUser = Authorisation.CurrentUser(update, Newtonsoft.Json.JsonConvert.SerializeObject(update));
-        //var currentTable = Lobby.SearchActiveTables(currentUser);
-        //var currentPlayerCondition =  Lobby.RetrievePlayerCondition(currentUser, currentTable);
-        //var currentUserSession = Lobby.RetrieveUserSession(currentUser, currentTable);
+            
+        long chatId = message.Chat.Id;
+        if (!_sessionServices.TryGetValue(chatId, out ISessionService sessionService))
+        {
+            // create new session service for this user if not exist
+            sessionService = new SessionService(_playerService, _lobbyService, _commandService);
+            _sessionServices[chatId] = sessionService;
+        }
+        sessionService.UserTelegramId = chatId;
+        sessionService.SessionPlayer = await _playerService.GetPlayerAsync(chatId);
 
-        //currentParameters.CurrentUser = currentUser;
-        //currentParameters.CurrentPlayerCondition = currentPlayerCondition;
-        //currentParameters.CurrentUserSession = currentUserSession;
-        //currentParameters.CurrentTable = currentTable;
+        ICommand? command = null;
+        if (text.StartsWith('/'))
+        {
+            _commandService.ClearCommands();
+            command = _commandService.FindCommand(ref text);
+            if (command != null)
+                _commandService.PushCommand(command, text);
+            else
+            {
+                _resultPresenter.PresentResult("Unknown command", chatId);
+                return;
+            }
+        }
 
-        //var currentStatus = $"user: \t{currentUser.Name}, {currentUser.TelegramId}: {currentUser.Id}, \n" +
-        //    (currentUserSession == null ? "" : $"playerNumber: \t{currentUserSession.PlayerNumber}, {currentUserSession.Location} \n") +
-        //    (currentTable == null ? "" : $"currentTable: \t{currentTable.Name}, {currentTable.Token}");
+        sessionService.LastInput = text;
+        command = _commandService.PopCommand().Item1;
 
-
-
-        //if (update.Type == Telegram.Bot.Types.Enums.UpdateType.Message)
-        //{
-
-        //    var message = update.Message;
-
-        //    if (message.Type == Telegram.Bot.Types.Enums.MessageType.Photo)
-        //    {
-        //        //skip
-        //    }
-        //    else if (message.Text.ToLower() == "/start")
-        //    {
-        //        var isExistActiveGame = !(currentTable == null || currentTable.IsEmpty());
-        //        await Bot.SendTextMessageAsync(message.Chat.Id, "Make you choice", replyMarkup: BotButtonsProcessing.StartMenu(isExistActiveGame));
-        //    }
-        //    else if (message.Text.StartsWith("token_"))
-        //    {
-        //        var sqlTableRepository = new SqlTableRepository();
-        //        var table = sqlTableRepository.Get(message.Text);
-        //        currentParameters.CurrentTable = Lobby.RetrieveTable(table);
-        //        var playerNumber = Lobby.GetNewPlayerNumber(currentParameters.CurrentTable, currentUser);
-        //        //?
-        //        var CurrentPosition = currentParameters.CurrentUserSession.Location;
-        //        if (playerNumber == 0) 
-        //            Console.Write("Error!");
-        //        else
-        //        {
-        //            var sqlCellRepository = new SqlCellRepository();
-        //            var playerCell = sqlCellRepository.Get(currentParameters.CurrentTable.MapId, playerNumber);
-        //            CurrentPosition = BotButtonsProcessing.CalculatePlace(playerCell.CoordinateX, playerCell.CoordinateY);
-        //        }
-        //        table.Users.Add(currentUser);
-
-        //        currentParameters.CurrentUserSession.Table = currentParameters.CurrentTable;
-        //        currentParameters.CurrentUserSession.TableId = currentParameters.CurrentTable.Id;
-        //        currentParameters.CurrentUserSession.PlayerNumber = playerNumber;
-        //        Lobby.UpdateLobby(currentUser, CurrentPosition, currentParameters.CurrentUserSession);
-
-
-
-        //        await Bot.SendTextMessageAsync(message.Chat.Id, $"You are the {currentParameters.CurrentUserSession.PlayerNumber} Player", replyMarkup: BotButtonsProcessing.TableSettings());
-
-        //    }
-        //    //else if (message.Text.ToLower() == "/restart")
-        //    //{
-        //    //    BotButtonsProcessing.CurrentPosition = 1;
-        //    //    //MapGenerator.map.Cells[0, 0].IsOpen = true;
-        //    //    BotButtonsProcessing.MapButtonAsync(message, currentTable);
-        //    //}
-        //    if (displayStatus)
-        //        await botClient.SendTextMessageAsync(message.Chat, currentStatus);
-        //}
-        //else if (update.Type == Telegram.Bot.Types.Enums.UpdateType.CallbackQuery)
-        //{
-        //    string codeOfButton = update.CallbackQuery.Data;
-        //    BotButtonsProcessing.UpdateStatusAsync(botClient, update, cancellationToken, currentParameters);
-        //    if (displayStatus)
-        //        await botClient.SendTextMessageAsync(update.CallbackQuery.Message.Chat, currentStatus);
-
-        //    //Battlefield.UpdateStatusAsync(botClient, update, cancellationToken, codeOfButton, currentUser, currentTable);
-        //}
-
+        while(command != null) 
+        { 
+            var result = await command.ExecuteAsync(sessionService);
+            _resultPresenter.PresentResult(result, chatId);
+            if (_commandService.ExpectedInput)
+                return;
+            var command_argument = _commandService.PopCommand();
+            command = command_argument.Item1;
+            sessionService.LastInput = command_argument.Item2;
+        }
     }
 
     public static async Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
     {
-        // Некоторые действия
         Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(exception));
     }
+    private bool IsGetMessageAndText(ref Message message, ref string text, Update update)
+    {
+        if (update == null)
+            return false;
+        if (update.Type == Telegram.Bot.Types.Enums.UpdateType.Message)
+        {
+            if (update.Message == null)
+                return false;
+            message = update.Message;
+            if (message == null) return false;
+
+            text = message.Text.ToLower();
+        }
+        else if (update.Type == Telegram.Bot.Types.Enums.UpdateType.CallbackQuery)
+        {
+            if (update.CallbackQuery == null || update.CallbackQuery.Message == null)
+                return false;
+            message = update.CallbackQuery.Message;
+            text = update.CallbackQuery.Data.ToLower();
+        }
+        if (message == null)
+            return false;
+        return true;
+    }
+
 }
 

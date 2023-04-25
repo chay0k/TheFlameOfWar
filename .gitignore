@@ -363,3 +363,6 @@ MigrationBackup/
 FodyWeavers.xsd
 /Data/App.config
 /TelegramBot/App.config
+/ConsoleClient/App.config
+/.gitignore
+/.gitignore
