@@ -11,19 +11,21 @@ public class Name : ICommand
 {
     public async Task<string> ExecuteAsync(ISessionService session)
     {
-        var message = "";
+        string message;
         var playerService = (IPlayerService)session.GetService(typeof(IPlayerService));
+        var commandService = (ICommandService)session.GetService(typeof(ICommandService));
         var player = session.SessionPlayer;
         var name = session.LastInput; 
         if (player != null)
         {
             message = $"Your name is '{player.Name}'";
-            session.ClearCommands();
+            commandService.ExpectedInput = false;
         }
         else if (name == "") 
         {
             message = "Please enter your name";
-            session.PushCommand(this);
+            commandService.PushCommand(this, "");
+            commandService.ExpectedInput = true;
         }
         else 
         {
@@ -31,19 +33,20 @@ public class Name : ICommand
             if (existingPlayer != null && existingPlayer.TelegramId == session.UserTelegramId) 
             {
                 message = $"Your name is '{name}'";
-                session.ClearCommands();
+                commandService.ExpectedInput = false;
             }
             else if (existingPlayer != null)
             {
                 message = $"A user with name '{name}' already exists. Please choose another name.";
-                session.PushCommand(this);
+                commandService.PushCommand(this, "");
+                commandService.ExpectedInput = true;
             }
             else
             {             
                 player = await playerService.CreateNewAsync(name, session.UserTelegramId);
                 session.SessionPlayer = player;
                 message = $"User with name '{name}' has been created";
-                session.ClearCommands();
+                commandService.ExpectedInput = false;
             }
         }
         return message;

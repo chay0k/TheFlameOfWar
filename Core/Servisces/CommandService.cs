@@ -5,6 +5,7 @@ using Core.Commands;
 namespace Core.Servisces;
 public class CommandService : ICommandService
 {
+    public Guid Id { get; set; }
     private readonly Dictionary<string, ICommand> _commands = new Dictionary<string, ICommand>
     {
     { Constants.Start,          new StartCommand() },
@@ -19,6 +20,8 @@ public class CommandService : ICommandService
     { Constants.Name,           new Name() },
 
 };
+    private Stack<(ICommand, string)> commands = new Stack<(ICommand, string)>();
+    public bool ExpectedInput { get; set; } = false;
 
     public ICommand FindCommand(ref string text)
     {
@@ -31,11 +34,35 @@ public class CommandService : ICommandService
         else
             return null;
     }
-
     public string FindCommandEnum(string text)
     {
         var firstWord = text.Split(' ')[0].ToLower();
         return firstWord;
     }
-
+    public (ICommand, string) PeekCommand()
+    {
+        if (commands.Count() == 0)
+            return (null, "");
+        return commands.Peek();
+    }
+    public void PushCommand(ICommand command, string argument)
+    {
+        if (commands.Count > 0 && commands.Peek().Item1 == command)
+            return;
+        commands.Push((command, argument));
+    }
+    public (ICommand, string) PopCommand()
+    {
+        if (commands.Count() == 0)
+            return (null, "");
+        return commands.Pop();
+    }
+    public void ClearCommands()
+    {
+        commands.Clear();
+    }
+    public CommandService()
+    {
+        Id = Guid.NewGuid();
+    }
 }

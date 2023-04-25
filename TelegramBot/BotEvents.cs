@@ -31,6 +31,7 @@ public class BotEvents
 
     public async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
     {
+        _commandService.ExpectedInput = false;
         Message? message = null;
         string text = "";
 
@@ -43,7 +44,7 @@ public class BotEvents
         if (!_sessionServices.TryGetValue(chatId, out ISessionService sessionService))
         {
             // create new session service for this user if not exist
-            sessionService = new SessionService(_playerService, _lobbyService);
+            sessionService = new SessionService(_playerService, _lobbyService, _commandService);
             _sessionServices[chatId] = sessionService;
         }
         sessionService.UserTelegramId = chatId;
@@ -51,18 +52,30 @@ public class BotEvents
 
         ICommand? command = null;
         if (text.StartsWith('/'))
+        {
+            _commandService.ClearCommands();
             command = _commandService.FindCommand(ref text);
-        else if (sessionService.PeekCommand() != null)
-            command = sessionService.PeekCommand();
+            if (command != null)
+                _commandService.PushCommand(command, text);
+            else
+            {
+                _resultPresenter.PresentResult("Unknown command", chatId);
+                return;
+            }
+        }
 
         sessionService.LastInput = text;
+        command = _commandService.PopCommand().Item1;
 
-        if (command == null)
-            _resultPresenter.PresentResult("Unknown command", chatId);
-        else
-        {
+        while(command != null) 
+        { 
             var result = await command.ExecuteAsync(sessionService);
             _resultPresenter.PresentResult(result, chatId);
+            if (_commandService.ExpectedInput)
+                return;
+            var command_argument = _commandService.PopCommand();
+            command = command_argument.Item1;
+            sessionService.LastInput = command_argument.Item2;
         }
     }
 

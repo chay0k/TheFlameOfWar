@@ -8,28 +8,8 @@ public class SessionService : ISessionService
     private readonly Dictionary<string, object> _sessionData = new Dictionary<string, object>();
     private readonly IPlayerService _playerService;
     private readonly ILobbyService _lobbyService;
-    private Stack<ICommand> commands = new Stack<ICommand>();
+    private readonly ICommandService _commandService;
 
-    public ICommand PeekCommand()
-    {
-        if (commands.Count() == 0)
-            return null;
-        return (ICommand)commands.Peek();
-    }
-    public void PushCommand(ICommand command)
-    {
-        commands.Push(command);
-    }
-    public ICommand PopCommand()
-    {
-        if (commands.Count() == 0)
-            return null;
-        return commands.Pop();
-    }
-    public void ClearCommands()
-    {
-        commands.Clear();
-    }
     public string LastInput 
     {
         get => (string)_sessionData.GetValueOrDefault("lastinput");
@@ -47,10 +27,11 @@ public class SessionService : ISessionService
         get => (long)_sessionData.GetValueOrDefault("player_telegram_id");
         set => _sessionData["player_telegram_id"] = value;
     }
-    public SessionService(IPlayerService playerService, ILobbyService lobbyService)
+    public SessionService(IPlayerService playerService, ILobbyService lobbyService, ICommandService commandService)
     {
         _playerService = playerService;
         _lobbyService = lobbyService;
+        _commandService = commandService;
         SessionPlayer = null;
         PlayerTelegramId = 0;
     }
@@ -63,6 +44,10 @@ public class SessionService : ISessionService
         else if (serviceType == typeof(ILobbyService)) 
         {
             return _lobbyService;
+        }
+        else if (serviceType == typeof(ICommandService))
+        {
+            return _commandService;
         }
         return null;
     }

@@ -1,6 +1,7 @@
 ﻿using Contracts;
 using Contracts.Models;
-using System;
+using Core.Commands;
+using Core.Servisces;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,22 +12,53 @@ public class NewGame : ICommand
 {
     public async Task<string> ExecuteAsync(ISessionService session)
     {
-        // Створити новий екземпляр Lobby
-        var lobby = new Lobby
+        var commandService = (ICommandService)session.GetService(typeof(ICommandService));
+
+        var message ="";
+        var player = session.SessionPlayer;
+        var lobbyName = session.LastInput;
+        if (player == null)
         {
-            Id = Guid.NewGuid().ToString(), // Генерувати новий Id
-            Name = "New Lobby", // Встановити назву лобі
-            Token = "Some Token", // Встановити токен для лобі
-            Map = null, // Встановити карту для гри
-            IsActive = false, // Встановити прапорець активності лобі
-            Players = new List<Player>() { session.SessionPlayer}, // Ініціалізувати список гравців
-        };
+            message = "Please enter your name before start";
+            commandService.PushCommand(this, lobbyName);
+            commandService.PushCommand(new Name(), "");
+            commandService.ExpectedInput = true;
+            return message;
+        }
 
-        // Додати лобі до сесійного сервісу
-        ILobbyService lobbyService = (ILobbyService)session.GetService(typeof(ILobbyService));
-        lobbyService.AddLobby(lobby);
+        var lobbyService = (ILobbyService)session.GetService(typeof(ILobbyService));
 
+        //lobbyService.GetAvailableLobbies();
+        var playerLobby = lobbyService.GetByPlayer(player);
+        if (lobbyName == "")
+        {
+            message = "Please enter lobby name";
+            commandService.PushCommand(this, "");
+            commandService.ExpectedInput = true;
+        }
+        else if (playerLobby != null)
+        {
+            message = $"You take part in lobby \"{playerLobby.Name}\". \nTo create a new lobby, you will be excluded from the previous one. \nDo you agree with this?";
+            commandService.PushCommand(this, lobbyName);
+            commandService.PushCommand(new Sure(), "");
+            commandService.ExpectedInput = true;
+        }
+        else
+        {
+            var lobby = new Lobby
+            {
+                Id = Guid.NewGuid().ToString(), // Генерувати новий Id
+                Name = lobbyName, // Встановити назву лобі
+                Token = await TokenGenerator.GetRandomWord(lobbyName),
+                Map = null, // Встановити карту для гри
+                IsActive = true, // Встановити прапорець активності лобі
+                Players = new List<Player>() { player }, // Ініціалізувати список гравців
+            };
+            lobbyService.AddLobby(lobby);
+            message = $"Lobby \"{lobbyName}\" token: \"{lobby.Token}\" created";
+            commandService.ExpectedInput = false;
+        }
         // Повернути рядок-результат
-        return "New lobby created. Lobby Id: " + lobby.Id;
+        return message;
     }
 }

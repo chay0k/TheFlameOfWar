@@ -12,9 +12,4 @@ public interface ISessionService
     string LastInput { get; set; }
     long UserTelegramId { get; set; }
     object GetService(Type serviceType);
-    public ICommand PeekCommand();
-    public void PushCommand(ICommand command);
-    public ICommand PopCommand();
-    public void ClearCommands();
-
 }

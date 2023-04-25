@@ -13,8 +13,8 @@ class Program
     {
         Console.WriteLine("test");
         string token = ConfigurationManager.ConnectionStrings["Token"].ConnectionString;
-        var i = new Initialization();
-        i.InitializeAsync(true);
+        //var i = new Initialization();
+        //i.InitializeAsync(true);
         BotStart.CreateBot(token);
         BotStart.Start();
     }

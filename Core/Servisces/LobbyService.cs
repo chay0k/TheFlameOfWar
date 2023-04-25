@@ -25,4 +25,38 @@ public class LobbyService : ILobbyService
         // Повернути список доступних лобі
         return _lobbies.Values.ToList();
     }
+    public Lobby GetByPlayer(Player player) 
+    {
+        return _lobbies.Values.FirstOrDefault(l => l.Players.Contains(player));
+    }
+
+    public void DeleteLobby(Lobby lobby)
+    {
+        _lobbies.Remove(_lobbies.FirstOrDefault(x => x.Value == lobby).Key);
+    }
+
+    public string DeletePlayerFromLobby(Player player)
+    {
+        var message = "";
+        var existingLobby = GetByPlayer(player);
+        if (existingLobby != null)
+        {
+            var lobbyName = existingLobby.Name;
+            if (existingLobby.Players.Contains(player))
+            {
+                existingLobby.Players.Remove(player);
+                if (existingLobby.Players.Count == 0)
+                {
+                    DeleteLobby(existingLobby);
+                    message = $"Lobby {lobbyName} deleted.";
+                }
+                else
+                {
+                    message = $"player {player.Name} deleted from {lobbyName} lobby.";
+                }
+            }
+        }
+
+        return message;
+    }
 }
