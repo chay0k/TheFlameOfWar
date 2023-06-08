@@ -8,5 +8,6 @@ public interface ILobbyService
     public void DeleteLobby(Lobby lobby);
     public List<Lobby> GetAvailableLobbies();
     public Lobby GetByPlayer(Player player);
+    public Lobby GetByToken(string token); 
     public string DeletePlayerFromLobby(Player player);
 }

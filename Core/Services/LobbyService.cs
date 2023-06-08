@@ -6,7 +6,7 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Core.Servisces;
+namespace Core.Services;
 
 public enum GameState { NotStarted, InProgress, Finished }
 
@@ -28,6 +28,11 @@ public class LobbyService : ILobbyService
     public Lobby GetByPlayer(Player player) 
     {
         return _lobbies.Values.FirstOrDefault(l => l.Players.Contains(player));
+    }
+
+    public Lobby GetByToken(string token)
+    {
+        return _lobbies.Values.FirstOrDefault(l => l.Token == token);
     }
 
     public void DeleteLobby(Lobby lobby)

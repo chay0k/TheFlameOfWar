@@ -1,54 +1,56 @@
 ﻿using Contracts;
-using Contracts.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Core.Commands;
 public class Name : ICommand
 {
+    private readonly ICommandService _commandService;
+    private readonly IPlayerService _playerService;
+    public Name(IPlayerService playerService, ICommandService commandService)
+    {
+        _commandService = commandService;
+        _playerService = playerService;
+    }
     public async Task<string> ExecuteAsync(ISessionService session)
     {
-        string message;
-        var playerService = (IPlayerService)session.GetService(typeof(IPlayerService));
-        var commandService = (ICommandService)session.GetService(typeof(ICommandService));
         var player = session.SessionPlayer;
-        var name = session.LastInput; 
+        var name = session.LastInput;
+
+        // Перевірка чи вже задано ім'я гравця в сесії, якщо так, то повернути повідомлення
         if (player != null)
         {
-            message = $"Your name is '{player.Name}'";
-            commandService.ExpectedInput = false;
+            return $"Your name is '{player.Name}'";
         }
-        else if (name == "") 
+
+        // Перевірка чи введено ім'я гравця, якщо ні, то повернути повідомлення та запропонувати ввести
+        if (string.IsNullOrEmpty(name))
         {
-            message = "Please enter your name";
-            commandService.PushCommand(this, "");
-            commandService.ExpectedInput = true;
+            return RequestName();
         }
-        else 
+
+        // Перевірка чи існує гравець з таким ім'ям у базі даних
+        var existingPlayer = await _playerService.GetPlayerByNameAsync(name);
+
+        // Якщо гравець з таким ім'ям існує, то перевірити чи це той самий гравець, який зараз користується ботом
+        if (existingPlayer != null && existingPlayer.TelegramId == session.UserTelegramId)
         {
-            var existingPlayer = await playerService.GetPlayerByNameAsync(name);
-            if (existingPlayer != null && existingPlayer.TelegramId == session.UserTelegramId) 
-            {
-                message = $"Your name is '{name}'";
-                commandService.ExpectedInput = false;
-            }
-            else if (existingPlayer != null)
-            {
-                message = $"A user with name '{name}' already exists. Please choose another name.";
-                commandService.PushCommand(this, "");
-                commandService.ExpectedInput = true;
-            }
-            else
-            {             
-                player = await playerService.CreateNewAsync(name, session.UserTelegramId);
-                session.SessionPlayer = player;
-                message = $"User with name '{name}' has been created";
-                commandService.ExpectedInput = false;
-            }
+            return $"Your name is '{name}'";
         }
-        return message;
+
+        // Якщо гравець з таким ім'ям вже існує, то запропонувати ввести інше ім'я
+        if (existingPlayer != null)
+        {
+            return RequestName($"A user with name '{name}' already exists. Please choose another name.");
+        }
+
+        // Створення нового гравця з введеним іменем
+        player = await _playerService.CreateNewAsync(name, session.UserTelegramId);
+        session.SessionPlayer = player;
+        return $"User with name '{name}' has been created";
+    }
+    private string RequestName(string errorMessage = null)
+    {
+        _commandService.PushCommand(this, "");
+        _commandService.ExpectedInput = true;
+        return errorMessage ?? "Please enter your name";
     }
 }

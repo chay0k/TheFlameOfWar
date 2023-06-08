@@ -35,7 +35,7 @@ public class Sure : ICommand
         }
         else
         {
-            message = "Incorrect command. Send \u0022Y\u0022 to approve, and \u0022N\u0022 to reject";
+            message = "Incorrect command. Send \"Y\" to approve, and \"N\" to reject";
             commandService.PushCommand(this, "");
             commandService.ExpectedInput = true;
         }

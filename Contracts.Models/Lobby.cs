@@ -21,10 +21,15 @@ public class Lobby
         Map = selectedMap;
     }
 
-    public void InviteFriends(List<Player> friends)
+    public bool Connect(Player player)
     {
-        // Логіка для запрошення друзів
-        // friends - список гравців, яких потрібно запросити
+        if (
+            IsHotSeat ||
+            Map.Players >= Players.Count ||
+            Players.Contains(player)
+            ) return false;
+        Players.Add(player);
+        return true;
     }
 
     public void ChangeGameMode()

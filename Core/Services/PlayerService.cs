@@ -2,10 +2,8 @@
 using Contracts.Models;
 using Data.Models;
 using Data.Repositories;
-using Microsoft.Extensions.Logging;
-using System.Numerics;
 
-namespace Core.Servisces;
+namespace Core.Services;
 public class PlayerService : IPlayerService
 {
     private readonly IPlayerRepository _playerRepository;
@@ -38,7 +36,7 @@ public class PlayerService : IPlayerService
     }
     public async Task<Player> CreateNewAsync(string name, long telegramId = 0)
     {
-        var newPlayer = new Player { Name = name, TelegramId = telegramId, FirstName = "", LastName = "" };
+        var newPlayer = new Player { Name = name, TelegramId = telegramId};
         var playerEntity = MapToPlayerEntity(newPlayer);
         await _playerRepository.InsertAsync(playerEntity);
         await _playerRepository.SaveAsync();

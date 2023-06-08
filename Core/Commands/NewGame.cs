@@ -1,7 +1,8 @@
 ﻿using Contracts;
 using Contracts.Models;
 using Core.Commands;
-using Core.Servisces;
+using Core.Services;
+using Data.Repositories;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,55 +11,54 @@ using System.Threading.Tasks;
 namespace Core.Commands;
 public class NewGame : ICommand
 {
+    private readonly ILobbyService _lobbyService;
+    private readonly ICommandService _commandService;
+
+    public NewGame(ILobbyService lobbyService, ICommandService commandService)
+    {
+        _lobbyService = lobbyService;
+        _commandService = commandService;
+    }
     public async Task<string> ExecuteAsync(ISessionService session)
     {
-        var commandService = (ICommandService)session.GetService(typeof(ICommandService));
-
-        var message ="";
         var player = session.SessionPlayer;
-        var lobbyName = session.LastInput;
+
         if (player == null)
         {
-            message = "Please enter your name before start";
-            commandService.PushCommand(this, lobbyName);
-            commandService.PushCommand(new Name(), "");
-            commandService.ExpectedInput = true;
-            return message;
+            _commandService.PushCommand(this, session.LastInput);
+            _commandService.PushCommand(new Name(new PlayerService(new PlayerRepository(new UnitOfWork())), _commandService), "");
+            _commandService.ExpectedInput = true;
+            return "Please enter your name before start";
         }
 
-        var lobbyService = (ILobbyService)session.GetService(typeof(ILobbyService));
+        var playerLobby = _lobbyService.GetByPlayer(player);
+        var lobbyName = session.LastInput;
 
-        //lobbyService.GetAvailableLobbies();
-        var playerLobby = lobbyService.GetByPlayer(player);
-        if (lobbyName == "")
+        switch (lobbyName)
         {
-            message = "Please enter lobby name";
-            commandService.PushCommand(this, "");
-            commandService.ExpectedInput = true;
+            case "":
+                _commandService.PushCommand(this, "");
+                _commandService.ExpectedInput = true;
+                return "Please enter lobby name";
+            case string name when playerLobby != null:
+                _commandService.PushCommand(this, name);
+                _commandService.PushCommand(new Sure(), "");
+                _commandService.ExpectedInput = true;
+                return $"You take part in lobby \"{playerLobby.Name}\". \nTo create a new lobby, you will be excluded from the previous one. \nDo you agree with this?";
+            default:
+                var lobby = new Lobby
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Name = lobbyName,
+                    Token = await TokenGenerator.GetRandomWord(lobbyName),
+                    Map = null,
+                    IsActive = true,
+                    IsHotSeat = false,
+                    Players = new List<Player>() { player },
+                };
+                _lobbyService.AddLobby(lobby);
+                _commandService.ExpectedInput = false;
+                return $"Lobby \"{lobbyName}\" token: \"{lobby.Token}\" created";
         }
-        else if (playerLobby != null)
-        {
-            message = $"You take part in lobby \"{playerLobby.Name}\". \nTo create a new lobby, you will be excluded from the previous one. \nDo you agree with this?";
-            commandService.PushCommand(this, lobbyName);
-            commandService.PushCommand(new Sure(), "");
-            commandService.ExpectedInput = true;
-        }
-        else
-        {
-            var lobby = new Lobby
-            {
-                Id = Guid.NewGuid().ToString(), // Генерувати новий Id
-                Name = lobbyName, // Встановити назву лобі
-                Token = await TokenGenerator.GetRandomWord(lobbyName),
-                Map = null, // Встановити карту для гри
-                IsActive = true, // Встановити прапорець активності лобі
-                Players = new List<Player>() { player }, // Ініціалізувати список гравців
-            };
-            lobbyService.AddLobby(lobby);
-            message = $"Lobby \"{lobbyName}\" token: \"{lobby.Token}\" created";
-            commandService.ExpectedInput = false;
-        }
-        // Повернути рядок-результат
-        return message;
     }
 }

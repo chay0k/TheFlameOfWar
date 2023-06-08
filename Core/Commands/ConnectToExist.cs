@@ -1,37 +1,61 @@
 ﻿using Contracts;
-using Core.Servisces;
-using System;
-using System.Collections.Generic;
+using Core.Services;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Core.Commands;
-public class ConnectToExist : ICommand
+namespace Core.Commands
 {
-    public async Task<string> ExecuteAsync(ISessionService session)
+    public class ConnectToExist : ICommand
     {
-        // Отримати доступні лобі з сесійного сервісу
-        var lobbyService  = (ILobbyService)session.GetService(typeof(ILobbyService));
+        private readonly ILobbyService _lobbyService;
+        private readonly ICommandService _commandService;
 
-        var availableLobbies = lobbyService.GetAvailableLobbies();
-
-        // Перевірити, чи є доступні лобі
-        if (availableLobbies.Count == 0)
+        public ConnectToExist(ILobbyService lobbyService, ICommandService commandService)
         {
-            return "No available lobbies to join.";
+            _lobbyService = lobbyService;
+            _commandService = commandService;
         }
 
-        // Відобразити доступні лобі користувачу
-        var sb = new StringBuilder();
-        sb.AppendLine("Available lobbies to join:");
-        foreach (var lobby in availableLobbies)
+        public async Task<string> ExecuteAsync(ISessionService session)
         {
-            sb.AppendLine($"- Lobby Id: {lobby.Id}, Name: {lobby.Name}");
-        }
+            var message = "";
+            var token = session.LastInput;
+            if (!string.IsNullOrEmpty(token))
+            {
+                var lobby = _lobbyService.GetByToken(token);
+                if (lobby == null)
+                {
+                    message = $"There is no lobby with token {token}";
+                }
+                else
+                {
+                    if (lobby.Connect(session.SessionPlayer))
+                    {
+                        message = "Connected to lobby";
+                        _commandService.ExpectedInput = false;
+                    }
+                }
+            }
 
-        // Повернути рядок-результат
-        return sb.ToString();
+            var availableLobbies = _lobbyService.GetAvailableLobbies();
+
+            // Перевірити, чи є доступні лобі
+            if (availableLobbies.Count == 0)
+            {
+                return "No available lobbies to join.";
+            }
+
+            // Відобразити доступні лобі користувачу
+            var sb = new StringBuilder();
+            sb.AppendLine("Available lobbies to join:");
+            foreach (var lobby in availableLobbies)
+            {
+                sb.AppendLine($"- Lobby Id: {lobby.Id}, Name: {lobby.Name}");
+            }
+
+            // Повернути рядок-результат
+            return message + "\n" + sb.ToString();
+        }
     }
 }
-

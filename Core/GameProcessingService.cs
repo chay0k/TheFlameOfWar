@@ -1,6 +1,6 @@
 ﻿using Contracts;
 using Contracts.Models;
-using Core.Servisces;
+using Core.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;

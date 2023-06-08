@@ -2,7 +2,7 @@
 using Contracts.Models;
 using System.Collections.Generic;
 
-namespace Core.Servisces;
+namespace Core.Services;
 public class SessionService : ISessionService
 {
     private readonly Dictionary<string, object> _sessionData = new Dictionary<string, object>();
@@ -37,7 +37,7 @@ public class SessionService : ISessionService
     }
     public object GetService(Type serviceType)
     {
-        if (serviceType == typeof(IPlayerService))
+        if (serviceType == typeof(IMapService))
         {
             return _playerService;
         }

@@ -14,10 +14,11 @@ public class Cell
     { 
         return new List<Cell>();
     } 
-    public Cell(int x, int y)
+    public Cell(int x, int y, Map map)
     {
         X = x;
         Y = y;
+        Map = map;
     }
 
 }

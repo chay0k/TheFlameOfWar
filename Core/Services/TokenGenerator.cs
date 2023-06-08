@@ -2,7 +2,7 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace Core.Servisces;
+namespace Core.Services;
 public static class TokenGenerator
 {
     public static async Task<string> GetRandomWord(string text)
