@@ -43,7 +43,6 @@ namespace TelegramBot
 
             long chatId = message.Chat.Id;
 
-            // Отримання або створення сервісу сесії користувача
             if (!_sessionServices.TryGetValue(chatId, out ISessionService sessionService))
             {
                 sessionService = new SessionService(_playerService, _lobbyService, _commandService);
@@ -54,7 +53,6 @@ namespace TelegramBot
 
             ICommand? command = null;
 
-            // Пошук команди, якщо текст починається з '/'
             if (text.StartsWith('/'))
             {
                 _commandService.ClearCommands();
@@ -70,10 +68,8 @@ namespace TelegramBot
                 }
             }
 
-            // Збереження останнього введеного тексту користувачем
             sessionService.LastInput = text;
 
-            // Виконання команд по черзі, доки очікується введення
             command = _commandService.PopCommand().Item1;
             while (command != null)
             {
@@ -103,7 +99,8 @@ namespace TelegramBot
             message = null;
             text = "";
 
-            if (update == null || message == null)
+            if (update == null // || message == null
+                )
             {
                 return false;
             }

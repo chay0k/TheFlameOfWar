@@ -1,5 +1,6 @@
 ﻿using Contracts;
 using Contracts.Models;
+using Data.Repositories;
 using System.Collections.Generic;
 
 namespace Core.Services;
@@ -9,13 +10,21 @@ public class SessionService : ISessionService
     private readonly IPlayerService _playerService;
     private readonly ILobbyService _lobbyService;
     private readonly ICommandService _commandService;
-
+    private readonly IMapService _mapService;
+    public SessionService(IPlayerService playerService, ILobbyService lobbyService, ICommandService commandService)
+    {
+        _playerService = playerService;
+        _lobbyService = lobbyService;
+        _commandService = commandService;
+        _mapService = new MapService(new UnitOfWork());
+        SessionPlayer = null;
+        PlayerTelegramId = 0;
+    }
     public string LastInput 
     {
         get => (string)_sessionData.GetValueOrDefault("lastinput");
         set => _sessionData["lastinput"] = value;
     }
-
     public long UserTelegramId { get; set; }
     public Player SessionPlayer
     {
@@ -27,19 +36,15 @@ public class SessionService : ISessionService
         get => (long)_sessionData.GetValueOrDefault("player_telegram_id");
         set => _sessionData["player_telegram_id"] = value;
     }
-    public SessionService(IPlayerService playerService, ILobbyService lobbyService, ICommandService commandService)
-    {
-        _playerService = playerService;
-        _lobbyService = lobbyService;
-        _commandService = commandService;
-        SessionPlayer = null;
-        PlayerTelegramId = 0;
-    }
     public object GetService(Type serviceType)
     {
-        if (serviceType == typeof(IMapService))
+        if (serviceType == typeof(IPlayerService))
         {
             return _playerService;
+        }
+        else if (serviceType == typeof(IMapService))
+        {
+            return _mapService;
         }
         else if (serviceType == typeof(ILobbyService)) 
         {

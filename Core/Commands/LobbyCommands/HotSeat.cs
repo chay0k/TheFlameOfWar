@@ -13,7 +13,7 @@ public class HotSeat : ICommand
     public async Task<string> ExecuteAsync(ISessionService session)
     {
         string message;
-        var playerService = (IMapService)session.GetService(typeof(IMapService));
+        var playerService = (IPlayerService)session.GetService(typeof(IPlayerService));
         var commandService = (ICommandService)session.GetService(typeof(ICommandService));
         var lobbyService = (ILobbyService)session.GetService(typeof(ILobbyService));
 
