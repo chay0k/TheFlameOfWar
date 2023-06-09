@@ -30,9 +30,15 @@ namespace Core.Commands
                 }
                 else
                 {
-                    if (lobby.Connect(session.SessionPlayer))
+                    string details = "";
+                    if (lobby.Connect(session.SessionPlayer, ref details))
                     {
                         message = "Connected to lobby";
+                        _commandService.ExpectedInput = false;
+                    }
+                    else
+                    {
+                        message = "Failed connection to lobby";
                         _commandService.ExpectedInput = false;
                     }
                 }

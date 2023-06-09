@@ -13,12 +13,10 @@ public class HotSeat : ICommand
     public async Task<string> ExecuteAsync(ISessionService session)
     {
         string message;
-        var playerService = (IPlayerService)session.GetService(typeof(IPlayerService));
         var commandService = (ICommandService)session.GetService(typeof(ICommandService));
         var lobbyService = (ILobbyService)session.GetService(typeof(ILobbyService));
 
         var player = session.SessionPlayer;
-        var name = session.LastInput;
         var playerLobby = lobbyService.GetByPlayer(player);
 
         if (playerLobby == null)

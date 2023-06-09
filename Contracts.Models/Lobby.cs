@@ -21,15 +21,34 @@ public class Lobby
         Map = selectedMap;
     }
 
-    public bool Connect(Player player)
+    public bool Connect(Player player, ref string details)
     {
-        if (
-            IsHotSeat ||
-            Map.Players >= Players.Count ||
-            Players.Contains(player)
-            ) return false;
-        Players.Add(player);
-        return true;
+        if (IsHotSeat)
+        {
+            details = "Can't connect to hotseat lobby.";
+            return false;
+        }
+        else if (Map is null)
+        {
+            details = "Map is empty. Please create or choose the map.";
+            return false;
+        }
+        else if (Map.Players >= Players.Count)
+        {
+            details = "The lobby is full.";
+            return false;
+        }
+        else if (Players.Contains(player))
+        {
+            details = "You are currently in this lobby.";
+            return false;
+        }
+        else
+        {
+            Players.Add(player);
+            return true;
+        }
+
     }
 
     public void ChangeGameMode()

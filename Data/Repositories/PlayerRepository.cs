@@ -1,32 +1,34 @@
-﻿using Data.Models;
-using System.Threading.Tasks;
+﻿using Data.Contexts;
 using Data.Models;
-using Data.Contexts;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 
-namespace Data.Repositories;
-public class PlayerRepository: GenericRepository<PlayerEntity>, IPlayerRepository
+namespace Data.Repositories
 {
-    private readonly GameDbContext _context;
-
-    public PlayerRepository(UnitOfWork unitOfWork) : base(unitOfWork.context)
+    public class PlayerRepository : GenericRepository<PlayerEntity>, IPlayerRepository
     {
-        _context = unitOfWork.context;
-    }
+        private readonly GameDbContext _context;
 
-    public async Task<PlayerEntity> GetByTelegramIdAsync(long telegramId)
-    {
-        return await GetSingleAsync(x => x.TelegramId == telegramId);
-    }
+        public PlayerRepository(UnitOfWork unitOfWork) : base(unitOfWork.Context)
+        {
+            _context = unitOfWork.Context;
+        }
 
-    public async Task<PlayerEntity> GetByNameAsync(string name)
-    {
-        return await GetSingleAsync(x => x.Name == name);
-    }
+        public async Task<PlayerEntity> GetByTelegramIdAsync(long telegramId)
+        {
+            return await GetSingleAsync(x => x.TelegramId == telegramId);
+        }
 
-    public async Task<PlayerEntity> GetSingleAsync(Expression<Func<PlayerEntity, bool>> predicate)
-    {
-        return await context.Set<PlayerEntity>().SingleOrDefaultAsync(predicate);
+        public async Task<PlayerEntity> GetByNameAsync(string name)
+        {
+            return await GetSingleAsync(x => x.Name == name);
+        }
+
+        public async Task<PlayerEntity> GetSingleAsync(Expression<Func<PlayerEntity, bool>> predicate)
+        {
+            return await _context.Set<PlayerEntity>().SingleOrDefaultAsync(predicate);
+        }
     }
 }

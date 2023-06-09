@@ -1,6 +1,7 @@
 ﻿using Contracts;
 using Contracts.Models;
 using Data.Repositories;
+using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 
 namespace Core.Services;
@@ -11,12 +12,16 @@ public class SessionService : ISessionService
     private readonly ILobbyService _lobbyService;
     private readonly ICommandService _commandService;
     private readonly IMapService _mapService;
-    public SessionService(IPlayerService playerService, ILobbyService lobbyService, ICommandService commandService)
+    private readonly IServiceProvider _serviceProvider;
+
+    public SessionService(IServiceProvider serviceProvider)
     {
-        _playerService = playerService;
-        _lobbyService = lobbyService;
-        _commandService = commandService;
-        _mapService = new MapService(new UnitOfWork());
+        _playerService = serviceProvider.GetRequiredService<IPlayerService>();
+        _lobbyService = serviceProvider.GetRequiredService<ILobbyService>();
+        _commandService = serviceProvider.GetRequiredService<ICommandService>();
+        _mapService = serviceProvider.GetRequiredService<IMapService>();
+        _serviceProvider = serviceProvider;
+
         SessionPlayer = null;
         PlayerTelegramId = 0;
     }

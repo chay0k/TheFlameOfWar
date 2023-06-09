@@ -1,13 +1,9 @@
-﻿using Contracts.Models;
-using Contracts;
+﻿using Contracts;
 using Core.Services;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using Core.Services;
 using Newtonsoft.Json;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace TelegramBot
 {
@@ -18,14 +14,16 @@ namespace TelegramBot
         private readonly ILobbyService _lobbyService;
         private readonly Dictionary<long, ISessionService> _sessionServices;
         private readonly IBotResultPresenter _resultPresenter;
+        private readonly IServiceProvider _serviceProvider;
 
-        public BotEvents(ICommandService commandService, IPlayerService playerService, IBotResultPresenter resultPresenter, ILobbyService lobbyService)
+        public BotEvents(IServiceProvider serviceProvider)
         {
-            _commandService = commandService;
-            _playerService = playerService;
-            _resultPresenter = resultPresenter;
-            _lobbyService = lobbyService;
+            _commandService = serviceProvider.GetRequiredService<ICommandService>(); 
+            _playerService = serviceProvider.GetRequiredService<IPlayerService>(); ;
+            _resultPresenter = serviceProvider.GetRequiredService<IBotResultPresenter>();
+            _lobbyService = serviceProvider.GetRequiredService<ILobbyService>(); 
             _sessionServices = new Dictionary<long, ISessionService>();
+            _serviceProvider = serviceProvider;
         }
 
         public async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
@@ -45,7 +43,7 @@ namespace TelegramBot
 
             if (!_sessionServices.TryGetValue(chatId, out ISessionService sessionService))
             {
-                sessionService = new SessionService(_playerService, _lobbyService, _commandService);
+                sessionService = new SessionService(_serviceProvider);
                 _sessionServices[chatId] = sessionService;
             }
             sessionService.UserTelegramId = chatId;
@@ -99,34 +97,13 @@ namespace TelegramBot
             message = null;
             text = "";
 
-            if (update == null // || message == null
-                )
+            if (update == null || update.Message == null)
             {
                 return false;
             }
 
-            switch (update.Type)
-            {
-                case Telegram.Bot.Types.Enums.UpdateType.Message:
-                    message = update.Message;
-                    if (message == null)
-                    {
-                        return false;
-                    }
-                    text = message.Text?.ToLowerInvariant() ?? "";
-                    break;
-                case Telegram.Bot.Types.Enums.UpdateType.CallbackQuery:
-                    var callbackQuery = update.CallbackQuery;
-                    if (callbackQuery == null || callbackQuery.Message == null)
-                    {
-                        return false;
-                    }
-                    message = callbackQuery.Message;
-                    text = callbackQuery.Data?.ToLowerInvariant() ?? "";
-                    break;
-                default:
-                    return false;
-            }
+            message = update.Message;
+            text = message.Text?.ToLowerInvariant() ?? "";
 
             return true;
         }
