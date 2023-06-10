@@ -1,5 +1,6 @@
 ﻿using Contracts;
 using Contracts.Models;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,35 +10,35 @@ using System.Threading.Tasks;
 namespace Core.Commands;
 public class Sure : ICommand
 {
+    private readonly ICommandService _commandService;
+    private readonly ILobbyService _lobbyService;
+    public Sure(IServiceProvider serviceProvider)
+    {
+        _commandService = serviceProvider.GetRequiredService<ICommandService>();
+    }
     public async Task<string> ExecuteAsync(ISessionService session)
     {
-        var commandService = (ICommandService)session.GetService(typeof(ICommandService));
-
         var message = "";
         var answer = session.LastInput;
         if (answer == "n")
         {
-            commandService.ClearCommands();
+            _commandService.ClearCommands();
             message = "succesfully rejected";
-            commandService.ExpectedInput = false;
+            _commandService.ExpectedInput = false;
         }
         else if (answer == "y")
         {
-            //if (commandService.PeekCommand().GetType() == typeof(Sure))
-            //    commandService.PopCommand();
-            if(commandService.PeekCommand().Item1.GetType() == typeof(NewGame))
+            if(_commandService.PeekCommand().Item1.GetType() == typeof(NewGame))
             {
-                var lobbyService = (ILobbyService)session.GetService(typeof(ILobbyService));
-                message = lobbyService.DeletePlayerFromLobby(session.SessionPlayer);
-                commandService.ExpectedInput = false;
-                //message = await commandService.PopCommand().ExecuteAsync(session);
+                message = _lobbyService.DeletePlayerFromLobby(session.SessionPlayer);
+                _commandService.ExpectedInput = false;
             }
         }
         else
         {
             message = "Incorrect command. Send \"Y\" to approve, and \"N\" to reject";
-            commandService.PushCommand(this, "");
-            commandService.ExpectedInput = true;
+            _commandService.PushCommand(this, "");
+            _commandService.ExpectedInput = true;
         }
         return message;
     }

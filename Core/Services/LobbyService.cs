@@ -16,7 +16,6 @@ public class LobbyService : ILobbyService
 
     public void AddLobby(Lobby lobby)
     {
-        // Додати лобі до словника _lobbies
         _lobbies[lobby.Id] = lobby;
     }
 

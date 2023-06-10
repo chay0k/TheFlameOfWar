@@ -47,7 +47,7 @@ public class NewGame : ICommand
                 return "Please enter lobby name";
             case string name when playerLobby != null:
                 _commandService.PushCommand(this, name);
-                _commandService.PushCommand(new Sure(), "");
+                _commandService.PushCommand(new Sure(_serviceProvider), "");
                 _commandService.ExpectedInput = true;
                 return $"You take part in lobby \"{playerLobby.Name}\". \nTo create a new lobby, you will be excluded from the previous one. \nDo you agree with this?";
             default:

@@ -11,10 +11,14 @@ Console.WriteLine("Hello, World!");
 
 var services = new ServiceCollection();
 
+services.AddScoped<IUnitOfWork, UnitOfWork>();
+services.AddScoped<UnitOfWork>();
+
 services.AddScoped<IPlayerRepository, PlayerRepository>();
 services.AddScoped<IMapService, MapService>();
 services.AddScoped<IPlayerService, PlayerService>();
 services.AddScoped<ILobbyService, LobbyService>();
+services.AddScoped<ISessionService, SessionService>();
 services.AddScoped<ICommandService, CommandService>();
 services.AddScoped<IResultPresenter, ConsoleResultPresenter>();
 
@@ -22,8 +26,9 @@ services.AddScoped<ConsoleEvents>();
 
 var serviceProvider = services.BuildServiceProvider();
 
-var session = new SessionService(serviceProvider);
-var consoleEvent = new ConsoleEvents(serviceProvider);
+var session = serviceProvider.GetRequiredService<ISessionService>();
+var consoleEvent = serviceProvider.GetRequiredService<ConsoleEvents>();
+
 while (true)
 {
     var cmd = Console.ReadLine();

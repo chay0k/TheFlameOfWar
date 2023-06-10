@@ -15,7 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "Core\Core.csproj", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TelegramBot", "TelegramBot\TelegramBot.csproj", "{361DF628-0149-4DCE-81DC-69163C10B973}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleClient", "ConsoleClient\ConsoleClient.csproj", "{17691A82-23AB-4038-B12F-6F852ECD33D6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleClient", "ConsoleClient\ConsoleClient.csproj", "{17691A82-23AB-4038-B12F-6F852ECD33D6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreTest", "CoreTest\CoreTest.csproj", "{D4AFDF57-553E-4864-ADE0-4FF5AB72FC3A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,10 @@ Global
 		{17691A82-23AB-4038-B12F-6F852ECD33D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{17691A82-23AB-4038-B12F-6F852ECD33D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{17691A82-23AB-4038-B12F-6F852ECD33D6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4AFDF57-553E-4864-ADE0-4FF5AB72FC3A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4AFDF57-553E-4864-ADE0-4FF5AB72FC3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4AFDF57-553E-4864-ADE0-4FF5AB72FC3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4AFDF57-553E-4864-ADE0-4FF5AB72FC3A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
