@@ -3,6 +3,7 @@ using Contracts.Models;
 using Core.Commands;
 using Core.Services;
 using Data.Repositories;
+using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,11 +14,15 @@ public class NewGame : ICommand
 {
     private readonly ILobbyService _lobbyService;
     private readonly ICommandService _commandService;
+    private readonly IPlayerService _playerService;
+    private readonly IServiceProvider _serviceProvider;
 
-    public NewGame(ILobbyService lobbyService, ICommandService commandService)
+    public NewGame(IServiceProvider serviceProvider)
     {
-        _lobbyService = lobbyService;
-        _commandService = commandService;
+        _lobbyService = serviceProvider.GetRequiredService<ILobbyService>();
+        _commandService = serviceProvider.GetRequiredService<ICommandService>();
+        _serviceProvider = serviceProvider;
+
     }
     public async Task<string> ExecuteAsync(ISessionService session)
     {
@@ -26,7 +31,7 @@ public class NewGame : ICommand
         if (player == null)
         {
             _commandService.PushCommand(this, session.LastInput);
-            _commandService.PushCommand(new Name(new PlayerService(new PlayerRepository(new UnitOfWork())), _commandService), "");
+            _commandService.PushCommand(new Name(_serviceProvider), "");
             _commandService.ExpectedInput = true;
             return "Please enter your name before start";
         }

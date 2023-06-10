@@ -25,7 +25,6 @@ namespace TelegramBot
             _sessionServices = new Dictionary<long, ISessionService>();
             _serviceProvider = serviceProvider;
         }
-
         public async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {
             // Очищення стану очікуваного введення перед обробкою нового повідомлення
@@ -85,13 +84,10 @@ namespace TelegramBot
                 sessionService.LastInput = commandArgument;
             }
         }
-
-
         public static async Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
         {
             Console.WriteLine(JsonConvert.SerializeObject(exception));
         }
-
         private bool TryGetMessageAndText(ref Message message, ref string text, Update update)
         {
             message = null;

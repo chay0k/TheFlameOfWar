@@ -1,5 +1,6 @@
 ﻿using Contracts;
 using Core.Services;
+using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,10 +12,10 @@ namespace Core.Commands
         private readonly ILobbyService _lobbyService;
         private readonly ICommandService _commandService;
 
-        public ConnectToExist(ILobbyService lobbyService, ICommandService commandService)
+        public ConnectToExist(IServiceProvider serviceProvider)
         {
-            _lobbyService = lobbyService;
-            _commandService = commandService;
+            _lobbyService = serviceProvider.GetRequiredService<ILobbyService>();
+            _commandService = serviceProvider.GetRequiredService<ICommandService>();
         }
 
         public async Task<string> ExecuteAsync(ISessionService session)

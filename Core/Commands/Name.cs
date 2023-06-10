@@ -1,14 +1,15 @@
 ﻿using Contracts;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Core.Commands;
 public class Name : ICommand
 {
     private readonly ICommandService _commandService;
     private readonly IPlayerService _playerService;
-    public Name(IPlayerService playerService, ICommandService commandService)
+    public Name(IServiceProvider serviceProvider)
     {
-        _commandService = commandService;
-        _playerService = playerService;
+        _commandService = serviceProvider.GetRequiredService<ICommandService>();
+        _playerService = serviceProvider.GetRequiredService<IPlayerService>();
     }
     public async Task<string> ExecuteAsync(ISessionService session)
     {
