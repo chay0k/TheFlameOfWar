@@ -1,6 +1,6 @@
 ﻿using Contracts.Models;
 
-namespace Contracts;
+namespace Contracts.Services;
 public interface IPlayerService
 {
     Task<Player> GetPlayerAsync(long telegramId);

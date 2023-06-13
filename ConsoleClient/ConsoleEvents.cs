@@ -5,6 +5,7 @@ using Core.Services;
 using Microsoft.Extensions.DependencyInjection;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using System;
+using Contracts.Services;
 
 namespace ConsoleClient;
 internal class ConsoleEvents
@@ -62,7 +63,7 @@ internal class ConsoleEvents
         while (command != null)
         {
             _commandService.ExpectedInput = false;
-            string result = await command.ExecuteAsync(_sessionService);
+            string result = await command.ExecuteAsync();
             _resultPresenter.PresentResult(result);
 
             if (_commandService.ExpectedInput)

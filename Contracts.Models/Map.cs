@@ -1,6 +1,4 @@
-﻿using System.Xml.Linq;
-
-namespace Contracts.Models;
+﻿namespace Contracts.Models;
 public class Map
 {
     public Guid Id { get; set; }
@@ -24,7 +22,7 @@ public class Map
                 Cells.Add(new Cell(i, j, this));
             }
     }
-    public Cell GetCell(int x, int y)
+    public Cell Cell(int x, int y)
     {
         return Cells.FirstOrDefault(с => с.X == x && с.Y == y);
     }
@@ -35,11 +33,20 @@ public class Map
             for (int j = 0; j < SizeY; j++)
             {
                 if (field.ToLower() == "land")
-                    Console.Write(GetCell(i, j).Land.Emoji);
+                    Console.Write(Cell(i, j).Land.Emoji);
                 else if (field.ToLower() == "resource")
-                    Console.Write(GetCell(i, j).Resource.Emoji);
+                    Console.Write(Cell(i, j).Resource.Emoji);
             }
             Console.WriteLine();
         }
+    }
+
+    public void SetCell(int x, int y, Cell cell)
+    {
+        Cell targetCell = Cell(x, y);
+        targetCell.Land = cell.Land;
+        targetCell.Resource = cell.Resource;
+        targetCell.Id = cell.Id;
+        targetCell.Enemy = cell.Enemy;
     }
 }

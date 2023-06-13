@@ -1,5 +1,5 @@
-﻿using Contracts;
-using Contracts.Models;
+﻿using Contracts.Models;
+using Contracts.Services;
 using Data.Models;
 using Data.Repositories;
 

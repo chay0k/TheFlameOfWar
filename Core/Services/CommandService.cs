@@ -4,6 +4,7 @@ using Core.Commands;
 using Core.Commands.LobbyCommands;
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
+using Contracts.Services;
 
 namespace Core.Services
 {
@@ -25,7 +26,7 @@ namespace Core.Services
                 { Constants.NewGame,        () => new NewGame(_serviceProvider) },
                 { Constants.Connect,        () => new ConnectToExist(_serviceProvider) },
                 { Constants.MapChoose,      () => new ChooseMap() },
-                { Constants.MapCreate,      () => new CreateMap() },
+                { Constants.MapCreate,      () => ActivatorUtilities.CreateInstance<CreateMap>(_serviceProvider) },
                 { Constants.Info,           () => new Info() },
                 { Constants.Back,           () => new StepBack() },
                 { Constants.Menu,           () => new MainMenu() },

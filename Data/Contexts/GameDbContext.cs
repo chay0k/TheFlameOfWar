@@ -28,7 +28,12 @@ public class GameDbContext : DbContext
         Database.EnsureDeleted();
         Database.EnsureCreated();
     }
-
+    public GameDbContext(DbContextOptions<GameDbContext> options)
+        : base(options)
+    {
+        Database.EnsureDeleted();
+        Database.EnsureCreated();
+    }
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         string connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;

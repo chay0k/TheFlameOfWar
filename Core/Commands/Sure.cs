@@ -1,25 +1,22 @@
 ﻿using Contracts;
-using Contracts.Models;
+using Contracts.Services;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Core.Commands;
 public class Sure : ICommand
 {
     private readonly ICommandService _commandService;
     private readonly ILobbyService _lobbyService;
+    private readonly ISessionService _sessionService;
     public Sure(IServiceProvider serviceProvider)
     {
         _commandService = serviceProvider.GetRequiredService<ICommandService>();
+        _sessionService = serviceProvider.GetRequiredService<ISessionService>();
     }
-    public async Task<string> ExecuteAsync(ISessionService session)
+    public async Task<string> ExecuteAsync()
     {
         var message = "";
-        var answer = session.LastInput;
+        var answer = _sessionService.LastInput;
         if (answer == "n")
         {
             _commandService.ClearCommands();
@@ -30,7 +27,7 @@ public class Sure : ICommand
         {
             if(_commandService.PeekCommand().Item1.GetType() == typeof(NewGame))
             {
-                message = _lobbyService.DeletePlayerFromLobby(session.SessionPlayer);
+                message = _lobbyService.DeletePlayerFromLobby(_sessionService.SessionPlayer);
                 _commandService.ExpectedInput = false;
             }
         }

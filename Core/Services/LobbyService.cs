@@ -1,5 +1,5 @@
-﻿using Contracts;
-using Contracts.Models;
+﻿using Contracts.Models;
+using Contracts.Services;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -13,32 +13,27 @@ public enum GameState { NotStarted, InProgress, Finished }
 public class LobbyService : ILobbyService
 {
     private static readonly Dictionary<string, Lobby> _lobbies = new Dictionary<string, Lobby>();
-
     public void AddLobby(Lobby lobby)
     {
         _lobbies[lobby.Id] = lobby;
     }
-
     public List<Lobby> GetAvailableLobbies()
     {
         // Повернути список доступних лобі
         return _lobbies.Values.ToList();
     }
-    public Lobby GetByPlayer(Player player) 
+    public Lobby GetByPlayer(Player player)
     {
         return _lobbies.Values.FirstOrDefault(l => l.Players.Contains(player));
     }
-
     public Lobby GetByToken(string token)
     {
         return _lobbies.Values.FirstOrDefault(l => l.Token == token);
     }
-
     public void DeleteLobby(Lobby lobby)
     {
         _lobbies.Remove(_lobbies.FirstOrDefault(x => x.Value == lobby).Key);
     }
-
     public string DeletePlayerFromLobby(Player player)
     {
         var message = "";

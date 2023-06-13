@@ -3,7 +3,7 @@ using Telegram.Bot.Polling;
 using Core.Services;
 using Data.Repositories;
 using Microsoft.Extensions.DependencyInjection;
-using Contracts;
+using Contracts.Services;
 
 namespace TelegramBot
 {

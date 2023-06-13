@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Contracts.Services;
 
 namespace Contracts;
 public interface ICommand
 {
-    Task<string> ExecuteAsync(ISessionService session);
+    Task<string> ExecuteAsync();
 }

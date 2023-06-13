@@ -1,4 +1,6 @@
 ﻿using Contracts;
+using Contracts.Services;
+using Core.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Core.Commands;
@@ -6,15 +8,17 @@ public class Name : ICommand
 {
     private readonly ICommandService _commandService;
     private readonly IPlayerService _playerService;
+    private readonly ISessionService _sessionService;
     public Name(IServiceProvider serviceProvider)
     {
         _commandService = serviceProvider.GetRequiredService<ICommandService>();
         _playerService = serviceProvider.GetRequiredService<IPlayerService>();
+        _sessionService = serviceProvider.GetRequiredService<ISessionService>();
     }
-    public async Task<string> ExecuteAsync(ISessionService session)
+    public async Task<string> ExecuteAsync()
     {
-        var player = session.SessionPlayer;
-        var name = session.LastInput;
+        var player = _sessionService.SessionPlayer;
+        var name = _sessionService.LastInput;
 
         // Перевірка чи вже задано ім'я гравця в сесії, якщо так, то повернути повідомлення
         if (player != null)
@@ -32,7 +36,7 @@ public class Name : ICommand
         var existingPlayer = await _playerService.GetPlayerByNameAsync(name);
 
         // Якщо гравець з таким ім'ям існує, то перевірити чи це той самий гравець, який зараз користується ботом
-        if (existingPlayer != null && existingPlayer.TelegramId == session.UserTelegramId)
+        if (existingPlayer != null && existingPlayer.TelegramId == _sessionService.UserTelegramId)
         {
             return $"Your name is '{name}'";
         }
@@ -44,8 +48,8 @@ public class Name : ICommand
         }
 
         // Створення нового гравця з введеним іменем
-        player = await _playerService.CreateNewAsync(name, session.UserTelegramId);
-        session.SessionPlayer = player;
+        player = await _playerService.CreateNewAsync(name, _sessionService.UserTelegramId);
+        _sessionService.SessionPlayer = player;
         return $"User with name '{name}' has been created";
     }
     private string RequestName(string errorMessage = null)

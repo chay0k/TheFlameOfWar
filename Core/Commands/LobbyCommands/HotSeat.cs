@@ -1,5 +1,6 @@
 ﻿using Contracts;
 using Contracts.Models;
+using Contracts.Services;
 using Core.Services;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -12,20 +13,22 @@ namespace Core.Commands.LobbyCommands;
 public class HotSeat : ICommand
 {
     private readonly IServiceProvider _serviceProvider;
+    private readonly ISessionService _sessionService;
 
     public HotSeat(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
+        _sessionService = serviceProvider.GetRequiredService<ISessionService>();
     }
 
-    public async Task<string> ExecuteAsync(ISessionService session)
+    public async Task<string> ExecuteAsync()
     {
         string message;
 
         var commandService = _serviceProvider.GetRequiredService<ICommandService>();
         var lobbyService = _serviceProvider.GetRequiredService<ILobbyService>();
 
-        var player = session.SessionPlayer;
+        var player = _sessionService.SessionPlayer;
         var playerLobby = lobbyService.GetByPlayer(player);
 
         if (playerLobby == null)

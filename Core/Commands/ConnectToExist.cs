@@ -1,4 +1,5 @@
 ﻿using Contracts;
+using Contracts.Services;
 using Core.Services;
 using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
@@ -11,6 +12,7 @@ namespace Core.Commands
     {
         private readonly ILobbyService _lobbyService;
         private readonly ICommandService _commandService;
+        private readonly ISessionService _sessionService;
 
         public ConnectToExist(IServiceProvider serviceProvider)
         {
@@ -18,10 +20,10 @@ namespace Core.Commands
             _commandService = serviceProvider.GetRequiredService<ICommandService>();
         }
 
-        public async Task<string> ExecuteAsync(ISessionService session)
+        public async Task<string> ExecuteAsync()
         {
             var message = "";
-            var token = session.LastInput;
+            var token = _sessionService.LastInput;
             if (!string.IsNullOrEmpty(token))
             {
                 var lobby = _lobbyService.GetByToken(token);
@@ -32,7 +34,7 @@ namespace Core.Commands
                 else
                 {
                     string details = "";
-                    if (lobby.Connect(session.SessionPlayer, ref details))
+                    if (lobby.Connect(_sessionService.SessionPlayer, ref details))
                     {
                         message = "Connected to lobby";
                         _commandService.ExpectedInput = false;

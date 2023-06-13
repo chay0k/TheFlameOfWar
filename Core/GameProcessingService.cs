@@ -1,5 +1,5 @@
-﻿using Contracts;
-using Contracts.Models;
+﻿using Contracts.Models;
+using Contracts.Services;
 using Core.Services;
 using System;
 using System.Collections.Generic;

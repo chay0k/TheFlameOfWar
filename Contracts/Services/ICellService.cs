@@ -1,6 +1,6 @@
 ﻿using Contracts.Models;
 
-namespace Contracts;
+namespace Contracts.Services;
 public interface ILobbyService
 {
     private static readonly Dictionary<string, Lobby> _lobbies = new Dictionary<string, Lobby>();
@@ -8,6 +8,6 @@ public interface ILobbyService
     public void DeleteLobby(Lobby lobby);
     public List<Lobby> GetAvailableLobbies();
     public Lobby GetByPlayer(Player player);
-    public Lobby GetByToken(string token); 
+    public Lobby GetByToken(string token);
     public string DeletePlayerFromLobby(Player player);
 }

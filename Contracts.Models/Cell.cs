@@ -10,6 +10,7 @@ public class Cell
     public Enemy Enemy { get; set; }
     public Land Land { get; set; }
     public Map Map { get; set; }
+    public int PlayerStartPosition { get; set; }
     public List<Cell> Neighbors() 
     { 
         return new List<Cell>();

@@ -1,43 +1,40 @@
 ﻿using Contracts;
 using Contracts.Models;
-using Core.Commands;
+using Contracts.Services;
 using Core.Services;
-using Data.Repositories;
 using Microsoft.Extensions.DependencyInjection;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Core.Commands;
 public class NewGame : ICommand
 {
     private readonly ILobbyService _lobbyService;
     private readonly ICommandService _commandService;
-    private readonly IPlayerService _playerService;
+    private readonly ISessionService _sessionService;
     private readonly IServiceProvider _serviceProvider;
 
     public NewGame(IServiceProvider serviceProvider)
     {
         _lobbyService = serviceProvider.GetRequiredService<ILobbyService>();
         _commandService = serviceProvider.GetRequiredService<ICommandService>();
+        _sessionService = serviceProvider.GetRequiredService<ISessionService>();
         _serviceProvider = serviceProvider;
 
     }
-    public async Task<string> ExecuteAsync(ISessionService session)
+    public async Task<string> ExecuteAsync()
     {
-        var player = session.SessionPlayer;
+        var player = _sessionService.SessionPlayer;
 
         if (player == null)
         {
-            _commandService.PushCommand(this, session.LastInput);
+            _commandService.PushCommand(this, _sessionService.LastInput);
             _commandService.PushCommand(new Name(_serviceProvider), "");
             _commandService.ExpectedInput = true;
             return "Please enter your name before start";
         }
 
         var playerLobby = _lobbyService.GetByPlayer(player);
-        var lobbyName = session.LastInput;
+        var lobbyName = _sessionService.LastInput;
 
         switch (lobbyName)
         {
@@ -62,8 +59,10 @@ public class NewGame : ICommand
                     Players = new List<Player>() { player },
                 };
                 _lobbyService.AddLobby(lobby);
+                _sessionService.Lobby = lobby;
                 _commandService.ExpectedInput = false;
                 return $"Lobby \"{lobbyName}\" token: \"{lobby.Token}\" created";
+                
         }
     }
 }

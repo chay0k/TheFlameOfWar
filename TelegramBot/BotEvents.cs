@@ -4,6 +4,7 @@ using Telegram.Bot;
 using Telegram.Bot.Types;
 using Newtonsoft.Json;
 using Microsoft.Extensions.DependencyInjection;
+using Contracts.Services;
 
 namespace TelegramBot
 {
@@ -71,7 +72,7 @@ namespace TelegramBot
             while (command != null)
             {
                 _commandService.ExpectedInput = false;
-                var result = await command.ExecuteAsync(sessionService);
+                var result = await command.ExecuteAsync();
                 _resultPresenter.PresentResult(result, chatId);
 
                 if (_commandService.ExpectedInput)

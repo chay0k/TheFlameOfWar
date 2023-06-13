@@ -1,4 +1,5 @@
-﻿namespace Contracts.Models;
+﻿using Data.Models;
+namespace Contracts.Models;
 public class Unit
 {
     public Guid Id { get; set; }

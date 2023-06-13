@@ -1,6 +1,4 @@
-﻿using Contracts.Models;
-
-namespace Data.Models;
+﻿namespace Data.Models;
 public class MapEntity
 {
     public Guid Id { get; set; }

@@ -1,5 +1,5 @@
-﻿using Contracts;
-using Contracts.Models;
+﻿using Contracts.Models;
+using Contracts.Services;
 using Data.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ public class SessionService : ISessionService
 {
     private readonly Dictionary<string, object> _sessionData = new Dictionary<string, object>();
     private readonly IServiceProvider _serviceProvider;
-
+    public Lobby? Lobby { get; set; } = null;
     public SessionService(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
@@ -33,11 +33,11 @@ public class SessionService : ISessionService
         get => (long)_sessionData.GetValueOrDefault("player_telegram_id");
         set => _sessionData["player_telegram_id"] = value;
     }
-    public object GetData(string key)
+    private object GetData(string key)
     {
         return _sessionData.GetValueOrDefault(key);
     }
-    public void SetData(string key, object value)
+    private void SetData(string key, object value)
     {
         _sessionData[key] = value;
     }

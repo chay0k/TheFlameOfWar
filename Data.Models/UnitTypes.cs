@@ -1,4 +1,4 @@
-﻿namespace Data.Models;
+﻿namespace Contracts.Models;
 public enum UnitTypes
 {
     Scout,
